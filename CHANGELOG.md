@@ -1,3 +1,6 @@
+## v1.0.0
+
+No significant changes detected since v1.0.0.
 ## v1.0.0 (major)
 
 - Refactor test method names to camel case ([@matt-edmondson](https://github.com/matt-edmondson))
