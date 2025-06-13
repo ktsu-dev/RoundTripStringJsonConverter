@@ -4,7 +4,6 @@
 
 namespace ktsu.RoundTripStringJsonConverter;
 
-using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,10 +11,37 @@ using System.Text.Json.Serialization;
 using ktsu.Extensions;
 
 /// <summary>
-/// A factory for creating JSON converters that use a type's ToString and FromString methods for serialization.
+/// A factory for creating JSON converters that use a type's ToString and string conversion methods for serialization.
+/// Supports various string conversion methods including FromString, Parse, Create, and Convert.
 /// </summary>
 public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 {
+	/// <summary>
+	/// Supported method names for string conversion, in order of preference.
+	/// </summary>
+	private static readonly string[] SupportedMethodNames = ["FromString", "Parse", "Create", "Convert"];
+
+	/// <summary>
+	/// Finds a suitable string conversion method for the specified type.
+	/// </summary>
+	/// <param name="type">The type to check for conversion methods.</param>
+	/// <returns>The method info if found, null otherwise.</returns>
+	private static MethodInfo? FindStringConversionMethod(Type type)
+	{
+		foreach (string methodName in SupportedMethodNames)
+		{
+			if (type.TryFindMethod(methodName, BindingFlags.Static | BindingFlags.Public, out MethodInfo? method) &&
+				method is not null &&
+				method.GetParameters().Length > 0 &&
+				method.GetParameters()[0].ParameterType == typeof(string) &&
+				(method.ReturnType == type || (method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition())))
+			{
+				return method;
+			}
+		}
+		return null;
+	}
+
 	/// <summary>
 	/// Determines whether the specified type can be converted by this factory.
 	/// </summary>
@@ -24,9 +50,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	public override bool CanConvert(Type typeToConvert)
 	{
 		ArgumentNullException.ThrowIfNull(typeToConvert);
-		return typeToConvert.TryFindMethod("FromString", BindingFlags.Static | BindingFlags.Public, out var method) &&
-			   method is not null && method.GetParameters().Length != 0 &&
-			   method.GetParameters()[0].ParameterType == typeof(string);
+		return FindStringConversionMethod(typeToConvert) is not null;
 	}
 
 	/// <summary>
@@ -38,27 +62,25 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(typeToConvert);
-		var converterType = typeof(RoundTripStringJsonConverter<>).MakeGenericType(typeToConvert);
+		Type converterType = typeof(RoundTripStringJsonConverter<>).MakeGenericType(typeToConvert);
 		return (JsonConverter)Activator.CreateInstance(converterType, BindingFlags.Instance | BindingFlags.Public, binder: null, args: null, culture: null)!;
 	}
 
 	/// <summary>
-	/// JSON converter that uses a type's ToString and FromString methods for serialization.
+	/// JSON converter that uses a type's ToString and string conversion methods for serialization.
+	/// Supports various string conversion methods including FromString, Parse, Create, and Convert.
 	/// </summary>
 	/// <typeparam name="T">The type to be converted.</typeparam>
 	private sealed class RoundTripStringJsonConverter<T> : JsonConverter<T>
 	{
-		private static readonly MethodInfo? FromStringMethod;
+		private static readonly MethodInfo? StringConversionMethod;
 
 		static RoundTripStringJsonConverter()
 		{
-			if (typeof(T).TryFindMethod("FromString", BindingFlags.Static | BindingFlags.Public, out FromStringMethod))
+			StringConversionMethod = FindStringConversionMethod(typeof(T));
+			if (StringConversionMethod is not null && StringConversionMethod.ContainsGenericParameters)
 			{
-				Debug.Assert(FromStringMethod is not null);
-				if (FromStringMethod.ContainsGenericParameters)
-				{
-					FromStringMethod = FromStringMethod.MakeGenericMethod(typeof(T));
-				}
+				StringConversionMethod = StringConversionMethod.MakeGenericMethod(typeof(T));
 			}
 		}
 
@@ -73,7 +95,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		{
 			ArgumentNullException.ThrowIfNull(typeToConvert);
 			return reader.TokenType == JsonTokenType.String
-				? (T)FromStringMethod!.Invoke(null, [reader.GetString()!])!
+				? (T)StringConversionMethod!.Invoke(null, [reader.GetString()!])!
 				: throw new JsonException();
 		}
 
@@ -88,7 +110,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		{
 			ArgumentNullException.ThrowIfNull(typeToConvert);
 
-			return (T)FromStringMethod!.Invoke(null, [reader.GetString()!])!;
+			return (T)StringConversionMethod!.Invoke(null, [reader.GetString()!])!;
 		}
 
 		/// <summary>

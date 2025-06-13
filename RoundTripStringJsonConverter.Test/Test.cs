@@ -33,8 +33,8 @@ public class Test
 	public void TestRoundTrip()
 	{
 		Test test = new("test");
-		var jsonString = JsonSerializer.Serialize(test, JsonSerializerOptions);
-		var result = JsonSerializer.Deserialize<Test>(jsonString, JsonSerializerOptions);
+		string jsonString = JsonSerializer.Serialize(test, JsonSerializerOptions);
+		Test? result = JsonSerializer.Deserialize<Test>(jsonString, JsonSerializerOptions);
 		Assert.IsNotNull(result);
 		Assert.AreEqual(test.hiddenString, result.hiddenString);
 	}
@@ -51,8 +51,8 @@ public class Test
 				new("test2"), 2
 			},
 		};
-		var jsonString = JsonSerializer.Serialize(test, JsonSerializerOptions);
-		var result = JsonSerializer.Deserialize<Dictionary<Test, int>>(jsonString, JsonSerializerOptions) ?? [];
+		string jsonString = JsonSerializer.Serialize(test, JsonSerializerOptions);
+		Dictionary<Test, int> result = JsonSerializer.Deserialize<Dictionary<Test, int>>(jsonString, JsonSerializerOptions) ?? [];
 		Assert.IsTrue(test.Keys.Select(x => x.hiddenString).SequenceEqual(result.Keys.Select(x => x.hiddenString)));
 		Assert.IsTrue(test.Values.SequenceEqual(result.Values));
 	}
