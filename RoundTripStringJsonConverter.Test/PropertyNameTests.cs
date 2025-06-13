@@ -21,9 +21,9 @@ public class PropertyNameTests
 
 	public class TestObject
 	{
-		public Dictionary<CustomKey, string> KeyValuePairs { get; set; } = [];
-		public Dictionary<CustomKey, CustomKey> KeyKeyPairs { get; set; } = [];
-		public Dictionary<CustomKey, List<CustomKey>> KeyListPairs { get; set; } = [];
+		public IDictionary<CustomKey, string> KeyValuePairs { get; } = new Dictionary<CustomKey, string>();
+		public IDictionary<CustomKey, CustomKey> KeyKeyPairs { get; } = new Dictionary<CustomKey, CustomKey>();
+		public IDictionary<CustomKey, List<CustomKey>> KeyListPairs { get; } = new Dictionary<CustomKey, List<CustomKey>>();
 	}
 
 	private static JsonSerializerOptions GetOptions()
@@ -72,30 +72,18 @@ public class PropertyNameTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		TestObject original = new()
-		{
-			KeyValuePairs = new Dictionary<CustomKey, string>
-			{
-				{ CustomKey.FromString("simple"), "simpleValue" },
-				{ CustomKey.FromString("complex key"), "complexValue" }
-			},
-			KeyKeyPairs = new Dictionary<CustomKey, CustomKey>
-			{
-				{ CustomKey.FromString("mapKey1"), CustomKey.FromString("mapValue1") },
-				{ CustomKey.FromString("mapKey2"), CustomKey.FromString("mapValue2") }
-			},
-			KeyListPairs = new Dictionary<CustomKey, List<CustomKey>>
-			{
-				{
-					CustomKey.FromString("listKey1"),
-					[CustomKey.FromString("item1"), CustomKey.FromString("item2")]
-				},
-				{
-					CustomKey.FromString("listKey2"),
-					[CustomKey.FromString("item3")]
-				}
-			}
-		};
+		TestObject original = new();
+
+		original.KeyValuePairs.Add(CustomKey.FromString("simple"), "simpleValue");
+		original.KeyValuePairs.Add(CustomKey.FromString("complex key"), "complexValue");
+
+		original.KeyKeyPairs.Add(CustomKey.FromString("mapKey1"), CustomKey.FromString("mapValue1"));
+		original.KeyKeyPairs.Add(CustomKey.FromString("mapKey2"), CustomKey.FromString("mapValue2"));
+
+		original.KeyListPairs.Add(CustomKey.FromString("listKey1"),
+			[CustomKey.FromString("item1"), CustomKey.FromString("item2")]);
+		original.KeyListPairs.Add(CustomKey.FromString("listKey2"),
+			[CustomKey.FromString("item3")]);
 
 		string json = JsonSerializer.Serialize(original, options);
 		TestObject? deserialized = JsonSerializer.Deserialize<TestObject>(json, options);

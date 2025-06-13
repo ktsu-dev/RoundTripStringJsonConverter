@@ -75,44 +75,52 @@ public class ParameterizedTests
 			JsonSerializer.Deserialize<TestType>(invalidJson, options));
 	}
 
-	public static IEnumerable<object[]> GetBuiltInTypes()
+	public static IEnumerable<object[]> BuiltInTypes
 	{
-		yield return new object[] { typeof(string) };
-		yield return new object[] { typeof(int) };
-		yield return new object[] { typeof(long) };
-		yield return new object[] { typeof(double) };
-		yield return new object[] { typeof(decimal) };
-		yield return new object[] { typeof(bool) };
-		yield return new object[] { typeof(DateTime) };
-		yield return new object[] { typeof(DateTimeOffset) };
-		yield return new object[] { typeof(Guid) };
-		yield return new object[] { typeof(TimeSpan) };
-		yield return new object[] { typeof(object) };
-		yield return new object[] { typeof(Array) };
-		yield return new object[] { typeof(List<string>) };
-		yield return new object[] { typeof(Dictionary<string, object>) };
+		get
+		{
+			yield return new object[] { typeof(string) };
+			yield return new object[] { typeof(int) };
+			yield return new object[] { typeof(long) };
+			yield return new object[] { typeof(double) };
+			yield return new object[] { typeof(decimal) };
+			yield return new object[] { typeof(bool) };
+			yield return new object[] { typeof(DateTime) };
+			yield return new object[] { typeof(DateTimeOffset) };
+			yield return new object[] { typeof(Guid) };
+			yield return new object[] { typeof(TimeSpan) };
+			yield return new object[] { typeof(object) };
+			yield return new object[] { typeof(Array) };
+			yield return new object[] { typeof(List<string>) };
+			yield return new object[] { typeof(Dictionary<string, object>) };
+		}
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetBuiltInTypes), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(BuiltInTypes), DynamicDataSourceType.Property)]
 	public void Should_Not_Convert_Built_In_Types(Type type)
 	{
+		ArgumentNullException.ThrowIfNull(type);
+
 		RoundTripStringJsonConverterFactory factory = new();
 		Assert.IsFalse(factory.CanConvert(type), $"Should not convert built-in type: {type.Name}");
 	}
 
-	public static IEnumerable<object[]> GetStringLengths()
+	public static IEnumerable<object[]> StringLengths
 	{
-		yield return new object[] { 0 };      // Empty
-		yield return new object[] { 1 };      // Single char
-		yield return new object[] { 10 };     // Short
-		yield return new object[] { 100 };    // Medium
-		yield return new object[] { 1000 };   // Long
-		yield return new object[] { 10000 };  // Very long
+		get
+		{
+			yield return new object[] { 0 };      // Empty
+			yield return new object[] { 1 };      // Single char
+			yield return new object[] { 10 };     // Short
+			yield return new object[] { 100 };    // Medium
+			yield return new object[] { 1000 };   // Long
+			yield return new object[] { 10000 };  // Very long
+		}
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetStringLengths), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(StringLengths), DynamicDataSourceType.Property)]
 	public void Should_Handle_Various_String_Lengths(int length)
 	{
 		JsonSerializerOptions options = GetOptions();
@@ -127,17 +135,20 @@ public class ParameterizedTests
 		Assert.AreEqual(length, deserialized.Value.Length);
 	}
 
-	public static IEnumerable<object[]> GetRepeatedValues()
+	public static IEnumerable<object[]> RepeatedValues
 	{
-		string[] values = ["test1", "test2", "test1", "test3", "test1"];
-		for (int i = 0; i < values.Length; i++)
+		get
 		{
-			yield return new object[] { values[i], i };
+			string[] values = ["test1", "test2", "test1", "test3", "test1"];
+			for (int i = 0; i < values.Length; i++)
+			{
+				yield return new object[] { values[i], i };
+			}
 		}
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(GetRepeatedValues), DynamicDataSourceType.Method)]
+	[DynamicData(nameof(RepeatedValues), DynamicDataSourceType.Property)]
 	public void Should_Handle_Repeated_Serialization_Consistently(string value, int iteration)
 	{
 		JsonSerializerOptions options = GetOptions();

@@ -45,10 +45,12 @@ public class EdgeCaseTests
 
 		public static TypeWithExceptionInToString FromString(string value) => new(value);
 
+#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations - this is intentional for testing
 		public override string ToString()
 		{
 			return Value == "throw" ? throw new InvalidOperationException("Test exception in ToString") : Value;
 		}
+#pragma warning restore CA1065
 	}
 
 	// Invalid types (should not be convertible)
@@ -62,8 +64,10 @@ public class EdgeCaseTests
 	{
 		public string Value { get; set; } = string.Empty;
 
-		// Wrong signature - not static
-		public static TypeWithWrongSignature FromString(string value) => new() { Value = value };
+		// Wrong signature - not static (intentionally non-static for testing)
+#pragma warning disable CA1822 // Mark members as static - this is intentionally non-static for testing
+		public TypeWithWrongSignature FromString(string value) => new() { Value = value };
+#pragma warning restore CA1822
 
 		public override string ToString() => Value;
 	}

@@ -49,15 +49,15 @@ public class IntegrationTests
 	{
 		public OrderId Id { get; set; } = null!;
 		public UserId CustomerId { get; set; } = null!;
-		public List<ProductCode> Products { get; set; } = [];
-		public Dictionary<CategoryName, int> CategoryCounts { get; set; } = [];
+		public IList<ProductCode> Products { get; } = [];
+		public IDictionary<CategoryName, int> CategoryCounts { get; } = new Dictionary<CategoryName, int>();
 		public DateTime OrderDate { get; set; }
 	}
 
 	public class OrderSummary
 	{
-		public List<Order> Orders { get; set; } = [];
-		public Dictionary<UserId, int> CustomerOrderCounts { get; set; } = [];
+		public IList<Order> Orders { get; } = [];
+		public IDictionary<UserId, int> CustomerOrderCounts { get; } = new Dictionary<UserId, int>();
 		public ProductCode? MostPopularProduct { get; set; }
 	}
 
@@ -79,18 +79,15 @@ public class IntegrationTests
 		{
 			Id = OrderId.Create("ORD-001"),
 			CustomerId = UserId.FromString("USER-123"),
-			Products = [
-				ProductCode.Parse("PROD-A"),
-				ProductCode.Parse("PROD-B"),
-				ProductCode.Parse("PROD-C")
-			],
-			CategoryCounts = new Dictionary<CategoryName, int>
-			{
-				{ CategoryName.Convert("Electronics"), 2 },
-				{ CategoryName.Convert("Books"), 1 }
-			},
 			OrderDate = new DateTime(2024, 1, 15, 10, 30, 0, DateTimeKind.Utc)
 		};
+
+		original.Products.Add(ProductCode.Parse("PROD-A"));
+		original.Products.Add(ProductCode.Parse("PROD-B"));
+		original.Products.Add(ProductCode.Parse("PROD-C"));
+
+		original.CategoryCounts.Add(CategoryName.Convert("Electronics"), 2);
+		original.CategoryCounts.Add(CategoryName.Convert("Books"), 1);
 
 		string json = JsonSerializer.Serialize(original, options);
 		Order? deserialized = JsonSerializer.Deserialize<Order>(json, options);
@@ -146,37 +143,32 @@ public class IntegrationTests
 
 		OrderSummary original = new()
 		{
-			Orders = [
-				new Order
-				{
-					Id = OrderId.Create("ORD-001"),
-					CustomerId = UserId.FromString("USER-A"),
-					Products = [ProductCode.Parse("PROD-1"), ProductCode.Parse("PROD-2")],
-					CategoryCounts = new Dictionary<CategoryName, int>
-					{
-						{ CategoryName.Convert("Tech"), 1 }
-					},
-					OrderDate = DateTime.UtcNow
-				},
-				new Order
-				{
-					Id = OrderId.Create("ORD-002"),
-					CustomerId = UserId.FromString("USER-B"),
-					Products = [ProductCode.Parse("PROD-1")],
-					CategoryCounts = new Dictionary<CategoryName, int>
-					{
-						{ CategoryName.Convert("Books"), 1 }
-					},
-					OrderDate = DateTime.UtcNow.AddDays(-1)
-				}
-			],
-			CustomerOrderCounts = new Dictionary<UserId, int>
-			{
-				{ UserId.FromString("USER-A"), 1 },
-				{ UserId.FromString("USER-B"), 1 }
-			},
 			MostPopularProduct = ProductCode.Parse("PROD-1")
 		};
+
+		Order order1 = new()
+		{
+			Id = OrderId.Create("ORD-001"),
+			CustomerId = UserId.FromString("USER-A"),
+			OrderDate = DateTime.UtcNow
+		};
+		order1.Products.Add(ProductCode.Parse("PROD-1"));
+		order1.Products.Add(ProductCode.Parse("PROD-2"));
+		order1.CategoryCounts.Add(CategoryName.Convert("Tech"), 1);
+
+		Order order2 = new()
+		{
+			Id = OrderId.Create("ORD-002"),
+			CustomerId = UserId.FromString("USER-B"),
+			OrderDate = DateTime.UtcNow.AddDays(-1)
+		};
+		order2.Products.Add(ProductCode.Parse("PROD-1"));
+		order2.CategoryCounts.Add(CategoryName.Convert("Books"), 1);
+
+		original.Orders.Add(order1);
+		original.Orders.Add(order2);
+		original.CustomerOrderCounts.Add(UserId.FromString("USER-A"), 1);
+		original.CustomerOrderCounts.Add(UserId.FromString("USER-B"), 1);
 
 		string json = JsonSerializer.Serialize(original, options);
 		OrderSummary? deserialized = JsonSerializer.Deserialize<OrderSummary>(json, options);
