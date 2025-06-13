@@ -9,57 +9,45 @@ using System.Text.Json;
 [TestClass]
 public class EdgeCaseTests
 {
-	public class ValidStringType
+	public class ValidStringType(string value)
 	{
-		public string Value { get; }
-
-		public ValidStringType(string value) => Value = value;
+		public string Value { get; } = value;
 
 		public static ValidStringType FromString(string value) => new(value);
 
 		public override string ToString() => Value;
 	}
 
-	public class TypeWithNullHandling
+	public class TypeWithNullHandling(string? value)
 	{
-		public string? Value { get; }
-
-		public TypeWithNullHandling(string? value) => Value = value;
+		public string? Value { get; } = value;
 
 		public static TypeWithNullHandling FromString(string value) => new(value);
 
 		public override string ToString() => Value ?? string.Empty;
 	}
 
-	public class TypeWithExceptionInFromString
+	public class TypeWithExceptionInFromString(string value)
 	{
-		public string Value { get; }
-
-		public TypeWithExceptionInFromString(string value) => Value = value;
+		public string Value { get; } = value;
 
 		public static TypeWithExceptionInFromString FromString(string value)
 		{
-			if (value == "throw")
-				throw new ArgumentException("Test exception");
-			return new(value);
+			return value == "throw" ? throw new ArgumentException("Test exception") : new(value);
 		}
 
 		public override string ToString() => Value;
 	}
 
-	public class TypeWithExceptionInToString
+	public class TypeWithExceptionInToString(string value)
 	{
-		public string Value { get; }
-
-		public TypeWithExceptionInToString(string value) => Value = value;
+		public string Value { get; } = value;
 
 		public static TypeWithExceptionInToString FromString(string value) => new(value);
 
 		public override string ToString()
 		{
-			if (Value == "throw")
-				throw new InvalidOperationException("Test exception in ToString");
-			return Value;
+			return Value == "throw" ? throw new InvalidOperationException("Test exception in ToString") : Value;
 		}
 	}
 
@@ -75,7 +63,7 @@ public class EdgeCaseTests
 		public string Value { get; set; } = string.Empty;
 
 		// Wrong signature - not static
-		public TypeWithWrongSignature FromString(string value) => new() { Value = value };
+		public static TypeWithWrongSignature FromString(string value) => new() { Value = value };
 
 		public override string ToString() => Value;
 	}
@@ -207,7 +195,7 @@ public class EdgeCaseTests
 	[TestMethod]
 	public void Should_Not_Convert_Types_Without_Conversion_Method()
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 
 		Assert.IsFalse(factory.CanConvert(typeof(TypeWithoutConversionMethod)));
 		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongSignature)));
@@ -218,7 +206,7 @@ public class EdgeCaseTests
 	[TestMethod]
 	public void Should_Not_Convert_Built_In_Types()
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 
 		Assert.IsFalse(factory.CanConvert(typeof(string)));
 		Assert.IsFalse(factory.CanConvert(typeof(int)));
@@ -244,7 +232,7 @@ public class EdgeCaseTests
 	[TestMethod]
 	public void Should_Handle_Null_Argument_Exceptions()
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 
 		Assert.ThrowsException<ArgumentNullException>(() => factory.CanConvert(null!));
 		Assert.ThrowsException<ArgumentNullException>(() => factory.CreateConverter(null!, GetOptions()));

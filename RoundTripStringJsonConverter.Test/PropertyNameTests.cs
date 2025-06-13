@@ -9,10 +9,10 @@ using System.Text.Json;
 [TestClass]
 public class PropertyNameTests
 {
-	public class CustomKey
+	public class CustomKey(string value)
 	{
-		public string Value { get; }
-		public CustomKey(string value) => Value = value;
+		public string Value { get; } = value;
+
 		public static CustomKey FromString(string value) => new(value);
 		public override string ToString() => Value;
 		public override bool Equals(object? obj) => obj is CustomKey other && Value == other.Value;
@@ -40,7 +40,7 @@ public class PropertyNameTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ CustomKey.FromString("key1"), "value1" },
 			{ CustomKey.FromString("key2"), "value2" },
@@ -72,7 +72,7 @@ public class PropertyNameTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		TestObject original = new TestObject
+		TestObject original = new()
 		{
 			KeyValuePairs = new Dictionary<CustomKey, string>
 			{
@@ -123,7 +123,7 @@ public class PropertyNameTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ CustomKey.FromString("key with spaces"), "value1" },
 			{ CustomKey.FromString("key.with.dots"), "value2" },
@@ -157,7 +157,7 @@ public class PropertyNameTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ CustomKey.FromString(""), "emptyKey" },
 			{ CustomKey.FromString(" "), "singleSpace" },
@@ -190,7 +190,7 @@ public class PropertyNameTests
 		CustomKey key1 = CustomKey.FromString("duplicate");
 		CustomKey key2 = CustomKey.FromString("duplicate");
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ key1, "first" }
 		};
@@ -213,7 +213,7 @@ public class PropertyNameTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ CustomKey.FromString("lowercase"), "value1" },
 			{ CustomKey.FromString("UPPERCASE"), "value2" },

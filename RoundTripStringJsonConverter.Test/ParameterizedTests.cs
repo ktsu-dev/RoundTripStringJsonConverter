@@ -66,7 +66,7 @@ public class ParameterizedTests
 	[DataRow("{}")]
 	[DataRow("[]")]
 	[DataRow("[1,2,3]")]
-	[DataRow("{\"key\":\"value\"}")]
+	[DataRow(/*lang=json,strict*/ "{\"key\":\"value\"}")]
 	public void Should_Throw_JsonException_For_Non_String_Json(string invalidJson)
 	{
 		JsonSerializerOptions options = GetOptions();
@@ -97,7 +97,7 @@ public class ParameterizedTests
 	[DynamicData(nameof(GetBuiltInTypes), DynamicDataSourceType.Method)]
 	public void Should_Not_Convert_Built_In_Types(Type type)
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 		Assert.IsFalse(factory.CanConvert(type), $"Should not convert built-in type: {type.Name}");
 	}
 
@@ -129,7 +129,7 @@ public class ParameterizedTests
 
 	public static IEnumerable<object[]> GetRepeatedValues()
 	{
-		string[] values = { "test1", "test2", "test1", "test3", "test1" };
+		string[] values = ["test1", "test2", "test1", "test3", "test1"];
 		for (int i = 0; i < values.Length; i++)
 		{
 			yield return new object[] { values[i], i };

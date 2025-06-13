@@ -9,38 +9,38 @@ using System.Text.Json;
 [TestClass]
 public class IntegrationTests
 {
-	public class UserId
+	public class UserId(string value)
 	{
-		public string Value { get; }
-		public UserId(string value) => Value = value;
+		public string Value { get; } = value;
+
 		public static UserId FromString(string value) => new(value);
 		public override string ToString() => Value;
 		public override bool Equals(object? obj) => obj is UserId other && Value == other.Value;
 		public override int GetHashCode() => Value.GetHashCode();
 	}
 
-	public class ProductCode
+	public class ProductCode(string code)
 	{
-		public string Code { get; }
-		public ProductCode(string code) => Code = code;
+		public string Code { get; } = code;
+
 		public static ProductCode Parse(string code) => new(code);
 		public override string ToString() => Code;
 		public override bool Equals(object? obj) => obj is ProductCode other && Code == other.Code;
 		public override int GetHashCode() => Code.GetHashCode();
 	}
 
-	public class OrderId
+	public class OrderId(string id)
 	{
-		public string Id { get; }
-		public OrderId(string id) => Id = id;
+		public string Id { get; } = id;
+
 		public static OrderId Create(string id) => new(id);
 		public override string ToString() => Id;
 	}
 
-	public class CategoryName
+	public class CategoryName(string name)
 	{
-		public string Name { get; }
-		public CategoryName(string name) => Name = name;
+		public string Name { get; } = name;
+
 		public static CategoryName Convert(string name) => new(name);
 		public override string ToString() => Name;
 	}
@@ -75,7 +75,7 @@ public class IntegrationTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Order original = new Order
+		Order original = new()
 		{
 			Id = OrderId.Create("ORD-001"),
 			CustomerId = UserId.FromString("USER-123"),
@@ -111,7 +111,7 @@ public class IntegrationTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<UserId, List<ProductCode>> userProducts = new Dictionary<UserId, List<ProductCode>>
+		Dictionary<UserId, List<ProductCode>> userProducts = new()
 		{
 			{
 				UserId.FromString("USER-001"),
@@ -144,7 +144,7 @@ public class IntegrationTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		OrderSummary original = new OrderSummary
+		OrderSummary original = new()
 		{
 			Orders = [
 				new Order
@@ -206,10 +206,10 @@ public class IntegrationTests
 			largeList.Add(UserId.FromString($"USER-{i:D4}"));
 		}
 
-		Dictionary<ProductCode, List<UserId>> productUsers = new Dictionary<ProductCode, List<UserId>>();
+		Dictionary<ProductCode, List<UserId>> productUsers = [];
 		for (int i = 0; i < 10; i++)
 		{
-			productUsers[ProductCode.Parse($"PROD-{i}")] = largeList.Take(100).ToList();
+			productUsers[ProductCode.Parse($"PROD-{i}")] = [.. largeList.Take(100)];
 		}
 
 		string json = JsonSerializer.Serialize(productUsers, options);

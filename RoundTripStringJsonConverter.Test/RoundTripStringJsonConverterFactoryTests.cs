@@ -63,7 +63,7 @@ public class RoundTripStringJsonConverterFactoryTests
 
 	private static JsonSerializerOptions GetOptions()
 	{
-		JsonSerializerOptions options = new JsonSerializerOptions();
+		JsonSerializerOptions options = new();
 		options.Converters.Add(new RoundTripStringJsonConverterFactory());
 		return options;
 	}
@@ -71,7 +71,7 @@ public class RoundTripStringJsonConverterFactoryTests
 	[TestMethod]
 	public void CanConvertShouldReturnTrueForValidTypes()
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 		Assert.IsTrue(factory.CanConvert(typeof(TestClassWithFromString)));
 		Assert.IsTrue(factory.CanConvert(typeof(TestClassWithParse)));
 		Assert.IsTrue(factory.CanConvert(typeof(TestClassWithCreate)));
@@ -82,14 +82,14 @@ public class RoundTripStringJsonConverterFactoryTests
 	[TestMethod]
 	public void CanConvertShouldReturnFalseForInvalidType()
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 		Assert.IsFalse(factory.CanConvert(typeof(string)));
 	}
 
 	[TestMethod]
 	public void CreateConverterShouldReturnConverterForValidTypes()
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 
 		JsonConverter converter = factory.CreateConverter(typeof(TestClassWithFromString), GetOptions());
 		Assert.IsNotNull(converter);
@@ -112,19 +112,23 @@ public class RoundTripStringJsonConverterFactoryTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		TestClassWithFromString fromStringInstance = new TestClassWithFromString { Value = "test value" };
+		TestClassWithFromString fromStringInstance = new()
+		{ Value = "test value" };
 		string json = JsonSerializer.Serialize(fromStringInstance, options);
 		Assert.AreEqual("\"test value\"", json);
 
-		TestClassWithParse parseInstance = new TestClassWithParse { Value = "test value" };
+		TestClassWithParse parseInstance = new()
+		{ Value = "test value" };
 		json = JsonSerializer.Serialize(parseInstance, options);
 		Assert.AreEqual("\"test value\"", json);
 
-		TestClassWithCreate createInstance = new TestClassWithCreate { Value = "test value" };
+		TestClassWithCreate createInstance = new()
+		{ Value = "test value" };
 		json = JsonSerializer.Serialize(createInstance, options);
 		Assert.AreEqual("\"test value\"", json);
 
-		TestClassWithConvert convertInstance = new TestClassWithConvert { Value = "test value" };
+		TestClassWithConvert convertInstance = new()
+		{ Value = "test value" };
 		json = JsonSerializer.Serialize(convertInstance, options);
 		Assert.AreEqual("\"test value\"", json);
 	}
@@ -180,7 +184,7 @@ public class RoundTripStringJsonConverterFactoryTests
 		JsonSerializerOptions options = GetOptions();
 
 		// This test verifies that when multiple methods exist, FromString is used (since it's first in the priority order)
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 		Assert.IsTrue(factory.CanConvert(typeof(TestClassWithFromString)));
 	}
 }

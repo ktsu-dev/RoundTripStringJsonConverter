@@ -12,11 +12,9 @@ using System.Text.Json;
 public static class DemoExample
 {
 	// Example class using FromString method
-	public class PersonId
+	public class PersonId(string value)
 	{
-		public string Value { get; }
-
-		public PersonId(string value) => Value = value;
+		public string Value { get; } = value;
 
 		public static PersonId FromString(string value) => new(value);
 
@@ -24,11 +22,9 @@ public static class DemoExample
 	}
 
 	// Example class using Parse method (common in .NET)
-	public class ProductCode
+	public class ProductCode(string code)
 	{
-		public string Code { get; }
-
-		public ProductCode(string code) => Code = code;
+		public string Code { get; } = code;
 
 		public static ProductCode Parse(string code) => new(code);
 
@@ -36,11 +32,9 @@ public static class DemoExample
 	}
 
 	// Example class using Create method
-	public class OrderId
+	public class OrderId(string id)
 	{
-		public string Id { get; }
-
-		public OrderId(string id) => Id = id;
+		public string Id { get; } = id;
 
 		public static OrderId Create(string id) => new(id);
 
@@ -48,11 +42,9 @@ public static class DemoExample
 	}
 
 	// Example class using Convert method
-	public class CategoryName
+	public class CategoryName(string name)
 	{
-		public string Name { get; }
-
-		public CategoryName(string name) => Name = name;
+		public string Name { get; } = name;
 
 		public static CategoryName Convert(string name) => new(name);
 
@@ -71,14 +63,14 @@ public static class DemoExample
 	public static void RunDemo()
 	{
 		// Set up JSON serializer with our converter
-		JsonSerializerOptions options = new JsonSerializerOptions
+		JsonSerializerOptions options = new()
 		{
 			WriteIndented = true,
 			Converters = { new RoundTripStringJsonConverterFactory() }
 		};
 
 		// Create test data
-		Order order = new Order
+		Order order = new()
 		{
 			Id = OrderId.Create("ORD-12345"),
 			CustomerId = PersonId.FromString("CUST-67890"),

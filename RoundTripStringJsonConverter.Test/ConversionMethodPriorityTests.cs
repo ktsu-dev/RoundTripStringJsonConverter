@@ -13,11 +13,9 @@ public class ConversionMethodPriorityTests
 	/// Class with multiple conversion methods to test priority order.
 	/// FromString should be selected over Parse.
 	/// </summary>
-	public class ClassWithMultipleMethods
+	public class ClassWithMultipleMethods(string value)
 	{
-		public string Value { get; }
-
-		public ClassWithMultipleMethods(string value) => Value = value;
+		public string Value { get; } = value;
 
 		// This should be selected (highest priority)
 		public static ClassWithMultipleMethods FromString(string value) => new($"FromString:{value}");
@@ -31,11 +29,9 @@ public class ConversionMethodPriorityTests
 	/// <summary>
 	/// Class with Parse and Create methods to test Parse priority over Create.
 	/// </summary>
-	public class ClassWithParseAndCreate
+	public class ClassWithParseAndCreate(string value)
 	{
-		public string Value { get; }
-
-		public ClassWithParseAndCreate(string value) => Value = value;
+		public string Value { get; } = value;
 
 		// This should be selected (higher priority than Create)
 		public static ClassWithParseAndCreate Parse(string value) => new($"Parse:{value}");
@@ -49,11 +45,9 @@ public class ConversionMethodPriorityTests
 	/// <summary>
 	/// Class with Create and Convert methods to test Create priority over Convert.
 	/// </summary>
-	public class ClassWithCreateAndConvert
+	public class ClassWithCreateAndConvert(string value)
 	{
-		public string Value { get; }
-
-		public ClassWithCreateAndConvert(string value) => Value = value;
+		public string Value { get; } = value;
 
 		// This should be selected (higher priority than Convert)
 		public static ClassWithCreateAndConvert Create(string value) => new($"Create:{value}");
@@ -111,7 +105,7 @@ public class ConversionMethodPriorityTests
 	[TestMethod]
 	public void Factory_Should_Detect_Convertible_Types_With_Multiple_Methods()
 	{
-		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
+		RoundTripStringJsonConverterFactory factory = new();
 
 		Assert.IsTrue(factory.CanConvert(typeof(ClassWithMultipleMethods)));
 		Assert.IsTrue(factory.CanConvert(typeof(ClassWithParseAndCreate)));

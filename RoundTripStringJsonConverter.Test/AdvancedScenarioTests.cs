@@ -9,10 +9,10 @@ using System.Text.Json;
 [TestClass]
 public class AdvancedScenarioTests
 {
-	public class CustomKey
+	public class CustomKey(string value)
 	{
-		public string Value { get; }
-		public CustomKey(string value) => Value = value;
+		public string Value { get; } = value;
+
 		public static CustomKey FromString(string value) => new(value);
 		public override string ToString() => Value;
 		public override bool Equals(object? obj) => obj is CustomKey other && Value == other.Value;
@@ -33,7 +33,7 @@ public class AdvancedScenarioTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ CustomKey.FromString("key1"), "value1" },
 			{ CustomKey.FromString("key2"), "value2" },
@@ -65,7 +65,7 @@ public class AdvancedScenarioTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ CustomKey.FromString("key with spaces"), "value1" },
 			{ CustomKey.FromString("key.with.dots"), "value2" },
@@ -99,7 +99,7 @@ public class AdvancedScenarioTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
+		Dictionary<CustomKey, string> original = new()
 		{
 			{ CustomKey.FromString("lowercase"), "value1" },
 			{ CustomKey.FromString("UPPERCASE"), "value2" },
