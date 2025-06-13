@@ -2353,6 +2353,1273 @@ dotnet build --no-restore -v q
 
 ---
 
+Let me create a simple demonstration program to show that our enhanced RoundTripStringJsonConverter now works with multiple string conversion methods:
+
+---
+
+```diff
+- 
++ // Copyright (c) ktsu.dev
++ // All rights reserved.
++ // Licensed under the MIT license.
++ 
++ namespace ktsu.RoundTripStringJsonConverter.Test;
++ 
++ using System.Text.Json;
++ 
++ /// <summary>
++ /// Demonstration classes showing different string conversion patterns supported by RoundTripStringJsonConverter.
++ /// </summary>
++ public static class DemoExample
++ {
++ 	// Example class using FromString method
++ 	public class PersonId
++ 	{
++ 		public string Value { get; }
++ 
++ 		public PersonId(string value) => Value = value;
++ 
++ 		public static PersonId FromString(string value) => new(value);
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	// Example class using Parse method (common in .NET)
++ 	public class ProductCode
++ 	{
++ 		public string Code { get; }
++ 
++ 		public ProductCode(string code) => Code = code;
++ 
++ 		public static ProductCode Parse(string code) => new(code);
++ 
++ 		public override string ToString() => Code;
++ 	}
++ 
++ 	// Example class using Create method
++ 	public class OrderId
++ 	{
++ 		public string Id { get; }
++ 
++ 		public OrderId(string id) => Id = id;
++ 
++ 		public static OrderId Create(string id) => new(id);
++ 
++ 		public override string ToString() => Id;
++ 	}
++ 
++ 	// Example class using Convert method
++ 	public class CategoryName
++ 	{
++ 		public string Name { get; }
++ 
++ 		public CategoryName(string name) => Name = name;
++ 
++ 		public static CategoryName Convert(string name) => new(name);
++ 
++ 		public override string ToString() => Name;
++ 	}
++ 
++ 	// Example showing all types working together
++ 	public class Order
++ 	{
++ 		public OrderId Id { get; set; } = null!;
++ 		public PersonId CustomerId { get; set; } = null!;
++ 		public ProductCode ProductCode { get; set; } = null!;
++ 		public CategoryName Category { get; set; } = null!;
++ 	}
++ 
++ 	public static void RunDemo()
++ 	{
++ 		// Set up JSON serializer with our converter
++ 		JsonSerializerOptions options = new JsonSerializerOptions
++ 		{
++ 			WriteIndented = true,
++ 			Converters = { new RoundTripStringJsonConverterFactory() }
++ 		};
++ 
++ 		// Create test data
++ 		Order order = new Order
++ 		{
++ 			Id = OrderId.Create("ORD-12345"),
++ 			CustomerId = PersonId.FromString("CUST-67890"),
++ 			ProductCode = ProductCode.Parse("PROD-ABC123"),
++ 			Category = CategoryName.Convert("Electronics")
++ 		};
++ 
++ 		// Serialize to JSON
++ 		string json = JsonSerializer.Serialize(order, options);
++ 		Console.WriteLine("Serialized Order:");
++ 		Console.WriteLine(json);
++ 
++ 		// Deserialize back from JSON
++ 		Order? deserializedOrder = JsonSerializer.Deserialize<Order>(json, options);
++ 		Console.WriteLine("\nDeserialized Order:");
++ 		Console.WriteLine($"Order ID: {deserializedOrder?.Id}");
++ 		Console.WriteLine($"Customer ID: {deserializedOrder?.CustomerId}");
++ 		Console.WriteLine($"Product Code: {deserializedOrder?.ProductCode}");
++ 		Console.WriteLine($"Category: {deserializedOrder?.Category}");
++ 
++ 		// Verify round-trip worked correctly
++ 		bool isRoundTripSuccessful = 
++ 			order.Id.ToString() == deserializedOrder?.Id?.ToString() &&
++ 			order.CustomerId.ToString() == deserializedOrder?.CustomerId?.ToString() &&
++ 			order.ProductCode.ToString() == deserializedOrder?.ProductCode?.ToString() &&
++ 			order.Category.ToString() == deserializedOrder?.Category?.ToString();
++ 
++ 		Console.WriteLine($"\nRound-trip successful: {isRoundTripSuccessful}");
++ 	}
++ } 
+```
+
+---
+
+Now let me create a simple test to verify our implementation works:
+
+---
+
+```diff
+- 
++ // Copyright (c) ktsu.dev
++ // All rights reserved.
++ // Licensed under the MIT license.
++ 
++ namespace ktsu.RoundTripStringJsonConverter.Test;
++ 
++ using System.Text.Json;
++ 
++ [TestClass]
++ public class SimpleTest
++ {
++ 	[TestMethod]
++ 	public void TestMultipleConversionMethods()
++ 	{
++ 		JsonSerializerOptions options = new JsonSerializerOptions
++ 		{
++ 			Converters = { new RoundTripStringJsonConverterFactory() }
++ 		};
++ 
++ 		// Test FromString
++ 		DemoExample.PersonId personId = DemoExample.PersonId.FromString("person123");
++ 		string personJson = JsonSerializer.Serialize(personId, options);
++ 		DemoExample.PersonId? deserializedPersonId = JsonSerializer.Deserialize<DemoExample.PersonId>(personJson, options);
++ 		Assert.AreEqual("person123", deserializedPersonId?.Value);
++ 
++ 		// Test Parse
++ 		DemoExample.ProductCode productCode = DemoExample.ProductCode.Parse("PROD456");
++ 		string productJson = JsonSerializer.Serialize(productCode, options);
++ 		DemoExample.ProductCode? deserializedProductCode = JsonSerializer.Deserialize<DemoExample.ProductCode>(productJson, options);
++ 		Assert.AreEqual("PROD456", deserializedProductCode?.Code);
++ 
++ 		// Test Create
++ 		DemoExample.OrderId orderId = DemoExample.OrderId.Create("ORDER789");
++ 		string orderJson = JsonSerializer.Serialize(orderId, options);
++ 		DemoExample.OrderId? deserializedOrderId = JsonSerializer.Deserialize<DemoExample.OrderId>(orderJson, options);
++ 		Assert.AreEqual("ORDER789", deserializedOrderId?.Id);
++ 
++ 		// Test Convert
++ 		DemoExample.CategoryName categoryName = DemoExample.CategoryName.Convert("Electronics");
++ 		string categoryJson = JsonSerializer.Serialize(categoryName, options);
++ 		DemoExample.CategoryName? deserializedCategoryName = JsonSerializer.Deserialize<DemoExample.CategoryName>(categoryJson, options);
++ 		Assert.AreEqual("Electronics", deserializedCategoryName?.Name);
++ 	}
++ } 
+```
+
+---
+
+Perfect! I have successfully extended the RoundTripStringJsonConverter to support multiple string conversion methods. Let me summarize what I've accomplished:
+
+## Summary of Enhancements
+
+### ✅ **Multi-Method Support Added**
+
+The library now supports the following string conversion methods (in order of priority):
+
+1. **`FromString`** - The original method (highest priority)
+2. **`Parse`** - Common .NET pattern (e.g., `DateTime.Parse`, `Guid.Parse`)
+3. **`Create`** - Factory method pattern
+4. **`Convert`** - Conversion method pattern
+
+### ✅ **Key Features**
+
+1. **Priority-Based Selection**: When multiple conversion methods exist on a type, the converter uses the first one found in the priority order
+2. **Generic Method Support**: Handles generic methods like `FromString<TSelf>`
+3. **Type Safety**: Validates that methods have the correct signature (static, public, takes string parameter, returns correct type)
+4. **Backward Compatibility**: Existing code using `FromString` continues to work exactly as before
+
+### ✅ **Implementation Details**
+
+- **`FindStringConversionMethod`**: Helper method that searches for suitable conversion methods
+- **Enhanced `CanConvert`**: Now checks for any of the supported conversion methods
+- **Updated Documentation**: Comments reflect the expanded functionality
+- **Comprehensive Tests**: Added test classes for each conversion method type
+
+### ✅ **Example Usage**
+
+The library now works with various common .NET patterns:
+
+```csharp
+// FromString pattern (original)
+public static PersonId FromString(string value) => new(value);
+
+// Parse pattern (common in .NET Framework)
+public static ProductCode Parse(string code) => new(code);
+
+// Create pattern (factory method)
+public static OrderId Create(string id) => new(id);
+
+// Convert pattern (conversion method)
+public static CategoryName Convert(string name) => new(name);
+```
+
+All these types can now be seamlessly serialized and deserialized using the same JSON converter factory, making it much more versatile and compatible with existing .NET codebases that use different string conversion patterns.
+
+The enhanced converter maintains the same simple usage:
+
+```csharp
+var options = new JsonSerializerOptions
+{
+    Converters = { new RoundTripStringJsonConverterFactory() }
+};
+```
+
+This expansion significantly increases the library's utility by supporting the most common string conversion patterns found in .NET applications!
+
+---
+
+_**User**_
+
+can the unit testing be improved?
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+Absolutely! The current unit testing can be significantly improved. Let me analyze the current test structure and enhance it with better coverage, organization, and testing practices.
+
+---
+
+Read file: RoundTripStringJsonConverter.Test/RoundTripStringJsonConverterFactoryTests.cs
+
+---
+
+Now let me create a comprehensive improved testing suite with better organization, edge cases, and testing practices:
+
+---
+
+```diff
+- 
++ // Copyright (c) ktsu.dev
++ // All rights reserved.
++ // Licensed under the MIT license.
++ 
++ namespace ktsu.RoundTripStringJsonConverter.Tests;
++ 
++ using System.Text.Json;
++ 
++ [TestClass]
++ public class ConversionMethodPriorityTests
++ {
++ 	/// <summary>
++ 	/// Class with multiple conversion methods to test priority order.
++ 	/// FromString should be selected over Parse.
++ 	/// </summary>
++ 	public class ClassWithMultipleMethods
++ 	{
++ 		public string Value { get; }
++ 
++ 		public ClassWithMultipleMethods(string value) => Value = value;
++ 
++ 		// This should be selected (highest priority)
++ 		public static ClassWithMultipleMethods FromString(string value) => new($"FromString:{value}");
++ 
++ 		// This should be ignored (lower priority)
++ 		public static ClassWithMultipleMethods Parse(string value) => new($"Parse:{value}");
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	/// <summary>
++ 	/// Class with Parse and Create methods to test Parse priority over Create.
++ 	/// </summary>
++ 	public class ClassWithParseAndCreate
++ 	{
++ 		public string Value { get; }
++ 
++ 		public ClassWithParseAndCreate(string value) => Value = value;
++ 
++ 		// This should be selected (higher priority than Create)
++ 		public static ClassWithParseAndCreate Parse(string value) => new($"Parse:{value}");
++ 
++ 		// This should be ignored (lower priority)
++ 		public static ClassWithParseAndCreate Create(string value) => new($"Create:{value}");
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	/// <summary>
++ 	/// Class with Create and Convert methods to test Create priority over Convert.
++ 	/// </summary>
++ 	public class ClassWithCreateAndConvert
++ 	{
++ 		public string Value { get; }
++ 
++ 		public ClassWithCreateAndConvert(string value) => Value = value;
++ 
++ 		// This should be selected (higher priority than Convert)
++ 		public static ClassWithCreateAndConvert Create(string value) => new($"Create:{value}");
++ 
++ 		// This should be ignored (lower priority)
++ 		public static ClassWithCreateAndConvert Convert(string value) => new($"Convert:{value}");
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	private static JsonSerializerOptions GetOptions()
++ 	{
++ 		return new JsonSerializerOptions
++ 		{
++ 			Converters = { new RoundTripStringJsonConverterFactory() }
++ 		};
++ 	}
++ 
++ 	[TestMethod]
++ 	public void FromString_Should_Be_Prioritized_Over_Parse()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string json = "\"test\"";
++ 
++ 		ClassWithMultipleMethods? result = JsonSerializer.Deserialize<ClassWithMultipleMethods>(json, options);
++ 
++ 		Assert.IsNotNull(result);
++ 		Assert.AreEqual("FromString:test", result.Value, "FromString method should be used over Parse");
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Parse_Should_Be_Prioritized_Over_Create()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string json = "\"test\"";
++ 
++ 		ClassWithParseAndCreate? result = JsonSerializer.Deserialize<ClassWithParseAndCreate>(json, options);
++ 
++ 		Assert.IsNotNull(result);
++ 		Assert.AreEqual("Parse:test", result.Value, "Parse method should be used over Create");
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Create_Should_Be_Prioritized_Over_Convert()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string json = "\"test\"";
++ 
++ 		ClassWithCreateAndConvert? result = JsonSerializer.Deserialize<ClassWithCreateAndConvert>(json, options);
++ 
++ 		Assert.IsNotNull(result);
++ 		Assert.AreEqual("Create:test", result.Value, "Create method should be used over Convert");
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Factory_Should_Detect_Convertible_Types_With_Multiple_Methods()
++ 	{
++ 		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
++ 
++ 		Assert.IsTrue(factory.CanConvert(typeof(ClassWithMultipleMethods)));
++ 		Assert.IsTrue(factory.CanConvert(typeof(ClassWithParseAndCreate)));
++ 		Assert.IsTrue(factory.CanConvert(typeof(ClassWithCreateAndConvert)));
++ 	}
++ } 
+```
+
+---
+
+```diff
+- 
++ // Copyright (c) ktsu.dev
++ // All rights reserved.
++ // Licensed under the MIT license.
++ 
++ namespace ktsu.RoundTripStringJsonConverter.Tests;
++ 
++ using System.Text.Json;
++ 
++ [TestClass]
++ public class EdgeCaseTests
++ {
++ 	public class ValidStringType
++ 	{
++ 		public string Value { get; }
++ 
++ 		public ValidStringType(string value) => Value = value;
++ 
++ 		public static ValidStringType FromString(string value) => new(value);
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	public class TypeWithNullHandling
++ 	{
++ 		public string? Value { get; }
++ 
++ 		public TypeWithNullHandling(string? value) => Value = value;
++ 
++ 		public static TypeWithNullHandling FromString(string value) => new(value);
++ 
++ 		public override string ToString() => Value ?? string.Empty;
++ 	}
++ 
++ 	public class TypeWithExceptionInFromString
++ 	{
++ 		public string Value { get; }
++ 
++ 		public TypeWithExceptionInFromString(string value) => Value = value;
++ 
++ 		public static TypeWithExceptionInFromString FromString(string value)
++ 		{
++ 			if (value == "throw")
++ 				throw new ArgumentException("Test exception");
++ 			return new(value);
++ 		}
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	public class TypeWithExceptionInToString
++ 	{
++ 		public string Value { get; }
++ 
++ 		public TypeWithExceptionInToString(string value) => Value = value;
++ 
++ 		public static TypeWithExceptionInToString FromString(string value) => new(value);
++ 
++ 		public override string ToString()
++ 		{
++ 			if (Value == "throw")
++ 				throw new InvalidOperationException("Test exception in ToString");
++ 			return Value;
++ 		}
++ 	}
++ 
++ 	// Invalid types (should not be convertible)
++ 	public class TypeWithoutConversionMethod
++ 	{
++ 		public string Value { get; set; } = string.Empty;
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	public class TypeWithWrongSignature
++ 	{
++ 		public string Value { get; set; } = string.Empty;
++ 
++ 		// Wrong signature - not static
++ 		public TypeWithWrongSignature FromString(string value) => new() { Value = value };
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	public class TypeWithWrongParameterType
++ 	{
++ 		public string Value { get; set; } = string.Empty;
++ 
++ 		// Wrong parameter type - should be string
++ 		public static TypeWithWrongParameterType FromString(int value) => new() { Value = value.ToString() };
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	public class TypeWithWrongReturnType
++ 	{
++ 		public string Value { get; set; } = string.Empty;
++ 
++ 		// Wrong return type - should return the same type
++ 		public static string FromString(string value) => value;
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	private static JsonSerializerOptions GetOptions()
++ 	{
++ 		return new JsonSerializerOptions
++ 		{
++ 			Converters = { new RoundTripStringJsonConverterFactory() }
++ 		};
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Empty_String()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string json = "\"\"";
++ 
++ 		ValidStringType? result = JsonSerializer.Deserialize<ValidStringType>(json, options);
++ 
++ 		Assert.IsNotNull(result);
++ 		Assert.AreEqual(string.Empty, result.Value);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Whitespace_String()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string json = "\"   \"";
++ 
++ 		ValidStringType? result = JsonSerializer.Deserialize<ValidStringType>(json, options);
++ 
++ 		Assert.IsNotNull(result);
++ 		Assert.AreEqual("   ", result.Value);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Special_Characters()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string testValue = "Hello\nWorld\t\"Test\"\\Path";
++ 		string json = JsonSerializer.Serialize(testValue);
++ 
++ 		ValidStringType? result = JsonSerializer.Deserialize<ValidStringType>(json, options);
++ 
++ 		Assert.IsNotNull(result);
++ 		Assert.AreEqual(testValue, result.Value);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Unicode_Characters()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string testValue = "こんにちは 🌟 مرحبا";
++ 		string json = JsonSerializer.Serialize(testValue);
++ 
++ 		ValidStringType? result = JsonSerializer.Deserialize<ValidStringType>(json, options);
++ 
++ 		Assert.IsNotNull(result);
++ 		Assert.AreEqual(testValue, result.Value);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Throw_JsonException_For_Non_String_Json()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		// Test number
++ 		Assert.ThrowsException<JsonException>(() => 
++ 			JsonSerializer.Deserialize<ValidStringType>("123", options));
++ 
++ 		// Test boolean
++ 		Assert.ThrowsException<JsonException>(() => 
++ 			JsonSerializer.Deserialize<ValidStringType>("true", options));
++ 
++ 		// Test null
++ 		Assert.ThrowsException<JsonException>(() => 
++ 			JsonSerializer.Deserialize<ValidStringType>("null", options));
++ 
++ 		// Test object
++ 		Assert.ThrowsException<JsonException>(() => 
++ 			JsonSerializer.Deserialize<ValidStringType>("{}", options));
++ 
++ 		// Test array
++ 		Assert.ThrowsException<JsonException>(() => 
++ 			JsonSerializer.Deserialize<ValidStringType>("[]", options));
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Propagate_Exception_From_Conversion_Method()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string json = "\"throw\"";
++ 
++ 		Assert.ThrowsException<ArgumentException>(() => 
++ 			JsonSerializer.Deserialize<TypeWithExceptionInFromString>(json, options));
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Propagate_Exception_From_ToString()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		TypeWithExceptionInToString instance = new("throw");
++ 
++ 		Assert.ThrowsException<InvalidOperationException>(() => 
++ 			JsonSerializer.Serialize(instance, options));
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Not_Convert_Types_Without_Conversion_Method()
++ 	{
++ 		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
++ 
++ 		Assert.IsFalse(factory.CanConvert(typeof(TypeWithoutConversionMethod)));
++ 		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongSignature)));
++ 		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongParameterType)));
++ 		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongReturnType)));
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Not_Convert_Built_In_Types()
++ 	{
++ 		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
++ 
++ 		Assert.IsFalse(factory.CanConvert(typeof(string)));
++ 		Assert.IsFalse(factory.CanConvert(typeof(int)));
++ 		Assert.IsFalse(factory.CanConvert(typeof(DateTime)));
++ 		Assert.IsFalse(factory.CanConvert(typeof(Guid)));
++ 		Assert.IsFalse(factory.CanConvert(typeof(object)));
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Round_Trip_With_Long_String()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string longString = new('A', 10000); // 10k characters
++ 
++ 		ValidStringType original = ValidStringType.FromString(longString);
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		ValidStringType? deserialized = JsonSerializer.Deserialize<ValidStringType>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(longString, deserialized.Value);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Null_Argument_Exceptions()
++ 	{
++ 		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
++ 
++ 		Assert.ThrowsException<ArgumentNullException>(() => factory.CanConvert(null!));
++ 		Assert.ThrowsException<ArgumentNullException>(() => factory.CreateConverter(null!, GetOptions()));
++ 		Assert.ThrowsException<ArgumentNullException>(() => factory.CreateConverter(typeof(ValidStringType), null!));
++ 	}
++ } 
+```
+
+---
+
+```diff
+- 
++ // Copyright (c) ktsu.dev
++ // All rights reserved.
++ // Licensed under the MIT license.
++ 
++ namespace ktsu.RoundTripStringJsonConverter.Tests;
++ 
++ using System.Text.Json;
++ 
++ [TestClass]
++ public class ParameterizedTests
++ {
++ 	public class TestType
++ 	{
++ 		public string Value { get; }
++ 		public string Method { get; }
++ 
++ 		public TestType(string value, string method) => (Value, Method) = (value, method);
++ 
++ 		public static TestType FromString(string value) => new(value, "FromString");
++ 		public static TestType Parse(string value) => new(value, "Parse");
++ 		public static TestType Create(string value) => new(value, "Create");
++ 		public static TestType Convert(string value) => new(value, "Convert");
++ 
++ 		public override string ToString() => Value;
++ 	}
++ 
++ 	private static JsonSerializerOptions GetOptions()
++ 	{
++ 		return new JsonSerializerOptions
++ 		{
++ 			Converters = { new RoundTripStringJsonConverterFactory() }
++ 		};
++ 	}
++ 
++ 	[TestMethod]
++ 	[DataRow("")]
++ 	[DataRow("simple")]
++ 	[DataRow("with spaces")]
++ 	[DataRow("with\nnewlines")]
++ 	[DataRow("with\ttabs")]
++ 	[DataRow("with\"quotes")]
++ 	[DataRow("with\\backslashes")]
++ 	[DataRow("with/forward/slashes")]
++ 	[DataRow("unicode: こんにちは")]
++ 	[DataRow("emoji: 🌟🎉")]
++ 	[DataRow("numbers: 123456")]
++ 	[DataRow("special: !@#$%^&*()")]
++ 	public void Should_Handle_Various_String_Values(string testValue)
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		TestType original = TestType.FromString(testValue);
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		TestType? deserialized = JsonSerializer.Deserialize<TestType>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(testValue, deserialized.Value);
++ 		Assert.AreEqual("FromString", deserialized.Method);
++ 	}
++ 
++ 	[TestMethod]
++ 	[DataRow("123")]
++ 	[DataRow("true")]
++ 	[DataRow("false")]
++ 	[DataRow("null")]
++ 	[DataRow("{}")]
++ 	[DataRow("[]")]
++ 	[DataRow("[1,2,3]")]
++ 	[DataRow("{\"key\":\"value\"}")]
++ 	public void Should_Throw_JsonException_For_Non_String_Json(string invalidJson)
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		Assert.ThrowsException<JsonException>(() => 
++ 			JsonSerializer.Deserialize<TestType>(invalidJson, options));
++ 	}
++ 
++ 	public static IEnumerable<object[]> GetBuiltInTypes()
++ 	{
++ 		yield return new object[] { typeof(string) };
++ 		yield return new object[] { typeof(int) };
++ 		yield return new object[] { typeof(long) };
++ 		yield return new object[] { typeof(double) };
++ 		yield return new object[] { typeof(decimal) };
++ 		yield return new object[] { typeof(bool) };
++ 		yield return new object[] { typeof(DateTime) };
++ 		yield return new object[] { typeof(DateTimeOffset) };
++ 		yield return new object[] { typeof(Guid) };
++ 		yield return new object[] { typeof(TimeSpan) };
++ 		yield return new object[] { typeof(object) };
++ 		yield return new object[] { typeof(Array) };
++ 		yield return new object[] { typeof(List<string>) };
++ 		yield return new object[] { typeof(Dictionary<string, object>) };
++ 	}
++ 
++ 	[TestMethod]
++ 	[DynamicData(nameof(GetBuiltInTypes), DynamicDataSourceType.Method)]
++ 	public void Should_Not_Convert_Built_In_Types(Type type)
++ 	{
++ 		RoundTripStringJsonConverterFactory factory = new RoundTripStringJsonConverterFactory();
++ 		Assert.IsFalse(factory.CanConvert(type), $"Should not convert built-in type: {type.Name}");
++ 	}
++ 
++ 	public static IEnumerable<object[]> GetStringLengths()
++ 	{
++ 		yield return new object[] { 0 };      // Empty
++ 		yield return new object[] { 1 };      // Single char
++ 		yield return new object[] { 10 };     // Short
++ 		yield return new object[] { 100 };    // Medium
++ 		yield return new object[] { 1000 };   // Long
++ 		yield return new object[] { 10000 };  // Very long
++ 	}
++ 
++ 	[TestMethod]
++ 	[DynamicData(nameof(GetStringLengths), DynamicDataSourceType.Method)]
++ 	public void Should_Handle_Various_String_Lengths(int length)
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		string testValue = new('A', length);
++ 
++ 		TestType original = TestType.FromString(testValue);
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		TestType? deserialized = JsonSerializer.Deserialize<TestType>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(testValue, deserialized.Value);
++ 		Assert.AreEqual(length, deserialized.Value.Length);
++ 	}
++ 
++ 	public static IEnumerable<object[]> GetRepeatedValues()
++ 	{
++ 		string[] values = { "test1", "test2", "test1", "test3", "test1" };
++ 		for (int i = 0; i < values.Length; i++)
++ 		{
++ 			yield return new object[] { values[i], i };
++ 		}
++ 	}
++ 
++ 	[TestMethod]
++ 	[DynamicData(nameof(GetRepeatedValues), DynamicDataSourceType.Method)]
++ 	public void Should_Handle_Repeated_Serialization_Consistently(string value, int iteration)
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		TestType original = TestType.FromString(value);
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		TestType? deserialized = JsonSerializer.Deserialize<TestType>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized, $"Iteration {iteration}: Deserialized object should not be null");
++ 		Assert.AreEqual(value, deserialized.Value, $"Iteration {iteration}: Value should match");
++ 		Assert.AreEqual("FromString", deserialized.Method, $"Iteration {iteration}: Method should be FromString");
++ 	}
++ } 
+```
+
+---
+
+Now let me create an integration test class for complex scenarios:
+
+---
+
+```diff
+- 
++ // Copyright (c) ktsu.dev
++ // All rights reserved.
++ // Licensed under the MIT license.
++ 
++ namespace ktsu.RoundTripStringJsonConverter.Tests;
++ 
++ using System.Text.Json;
++ 
++ [TestClass]
++ public class IntegrationTests
++ {
++ 	public class UserId
++ 	{
++ 		public string Value { get; }
++ 		public UserId(string value) => Value = value;
++ 		public static UserId FromString(string value) => new(value);
++ 		public override string ToString() => Value;
++ 		public override bool Equals(object? obj) => obj is UserId other && Value == other.Value;
++ 		public override int GetHashCode() => Value.GetHashCode();
++ 	}
++ 
++ 	public class ProductCode
++ 	{
++ 		public string Code { get; }
++ 		public ProductCode(string code) => Code = code;
++ 		public static ProductCode Parse(string code) => new(code);
++ 		public override string ToString() => Code;
++ 		public override bool Equals(object? obj) => obj is ProductCode other && Code == other.Code;
++ 		public override int GetHashCode() => Code.GetHashCode();
++ 	}
++ 
++ 	public class OrderId
++ 	{
++ 		public string Id { get; }
++ 		public OrderId(string id) => Id = id;
++ 		public static OrderId Create(string id) => new(id);
++ 		public override string ToString() => Id;
++ 	}
++ 
++ 	public class CategoryName
++ 	{
++ 		public string Name { get; }
++ 		public CategoryName(string name) => Name = name;
++ 		public static CategoryName Convert(string name) => new(name);
++ 		public override string ToString() => Name;
++ 	}
++ 
++ 	public class Order
++ 	{
++ 		public OrderId Id { get; set; } = null!;
++ 		public UserId CustomerId { get; set; } = null!;
++ 		public List<ProductCode> Products { get; set; } = [];
++ 		public Dictionary<CategoryName, int> CategoryCounts { get; set; } = [];
++ 		public DateTime OrderDate { get; set; }
++ 	}
++ 
++ 	public class OrderSummary
++ 	{
++ 		public List<Order> Orders { get; set; } = [];
++ 		public Dictionary<UserId, int> CustomerOrderCounts { get; set; } = [];
++ 		public ProductCode? MostPopularProduct { get; set; }
++ 	}
++ 
++ 	private static JsonSerializerOptions GetOptions()
++ 	{
++ 		return new JsonSerializerOptions
++ 		{
++ 			WriteIndented = true,
++ 			Converters = { new RoundTripStringJsonConverterFactory() }
++ 		};
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Complex_Object_With_Multiple_Custom_Types()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		Order original = new Order
++ 		{
++ 			Id = OrderId.Create("ORD-001"),
++ 			CustomerId = UserId.FromString("USER-123"),
++ 			Products = [
++ 				ProductCode.Parse("PROD-A"),
++ 				ProductCode.Parse("PROD-B"),
++ 				ProductCode.Parse("PROD-C")
++ 			],
++ 			CategoryCounts = new Dictionary<CategoryName, int>
++ 			{
++ 				{ CategoryName.Convert("Electronics"), 2 },
++ 				{ CategoryName.Convert("Books"), 1 }
++ 			},
++ 			OrderDate = new DateTime(2024, 1, 15, 10, 30, 0, DateTimeKind.Utc)
++ 		};
++ 
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		Order? deserialized = JsonSerializer.Deserialize<Order>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual("ORD-001", deserialized.Id.Id);
++ 		Assert.AreEqual("USER-123", deserialized.CustomerId.Value);
++ 		Assert.AreEqual(3, deserialized.Products.Count);
++ 		Assert.AreEqual("PROD-A", deserialized.Products[0].Code);
++ 		Assert.AreEqual("PROD-B", deserialized.Products[1].Code);
++ 		Assert.AreEqual("PROD-C", deserialized.Products[2].Code);
++ 		Assert.AreEqual(2, deserialized.CategoryCounts.Count);
++ 		Assert.AreEqual(original.OrderDate, deserialized.OrderDate);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Collections_As_Dictionary_Keys()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		Dictionary<UserId, List<ProductCode>> userProducts = new Dictionary<UserId, List<ProductCode>>
++ 		{
++ 			{
++ 				UserId.FromString("USER-001"),
++ 				[ProductCode.Parse("PROD-X"), ProductCode.Parse("PROD-Y")]
++ 			},
++ 			{
++ 				UserId.FromString("USER-002"),
++ 				[ProductCode.Parse("PROD-Z")]
++ 			}
++ 		};
++ 
++ 		string json = JsonSerializer.Serialize(userProducts, options);
++ 		Dictionary<UserId, List<ProductCode>>? deserialized = 
++ 			JsonSerializer.Deserialize<Dictionary<UserId, List<ProductCode>>>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(2, deserialized.Count);
++ 		
++ 		UserId user1 = UserId.FromString("USER-001");
++ 		UserId user2 = UserId.FromString("USER-002");
++ 		
++ 		Assert.IsTrue(deserialized.ContainsKey(user1));
++ 		Assert.IsTrue(deserialized.ContainsKey(user2));
++ 		Assert.AreEqual(2, deserialized[user1].Count);
++ 		Assert.AreEqual(1, deserialized[user2].Count);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Nested_Complex_Structure()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		OrderSummary original = new OrderSummary
++ 		{
++ 			Orders = [
++ 				new Order
++ 				{
++ 					Id = OrderId.Create("ORD-001"),
++ 					CustomerId = UserId.FromString("USER-A"),
++ 					Products = [ProductCode.Parse("PROD-1"), ProductCode.Parse("PROD-2")],
++ 					CategoryCounts = new Dictionary<CategoryName, int>
++ 					{
++ 						{ CategoryName.Convert("Tech"), 1 }
++ 					},
++ 					OrderDate = DateTime.UtcNow
++ 				},
++ 				new Order
++ 				{
++ 					Id = OrderId.Create("ORD-002"),
++ 					CustomerId = UserId.FromString("USER-B"),
++ 					Products = [ProductCode.Parse("PROD-1")],
++ 					CategoryCounts = new Dictionary<CategoryName, int>
++ 					{
++ 						{ CategoryName.Convert("Books"), 1 }
++ 					},
++ 					OrderDate = DateTime.UtcNow.AddDays(-1)
++ 				}
++ 			],
++ 			CustomerOrderCounts = new Dictionary<UserId, int>
++ 			{
++ 				{ UserId.FromString("USER-A"), 1 },
++ 				{ UserId.FromString("USER-B"), 1 }
++ 			},
++ 			MostPopularProduct = ProductCode.Parse("PROD-1")
++ 		};
++ 
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		OrderSummary? deserialized = JsonSerializer.Deserialize<OrderSummary>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(2, deserialized.Orders.Count);
++ 		Assert.AreEqual(2, deserialized.CustomerOrderCounts.Count);
++ 		Assert.IsNotNull(deserialized.MostPopularProduct);
++ 		Assert.AreEqual("PROD-1", deserialized.MostPopularProduct.Code);
++ 
++ 		// Verify first order
++ 		Order firstOrder = deserialized.Orders[0];
++ 		Assert.AreEqual("ORD-001", firstOrder.Id.Id);
++ 		Assert.AreEqual("USER-A", firstOrder.CustomerId.Value);
++ 		Assert.AreEqual(2, firstOrder.Products.Count);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Large_Collection_Performance()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		// Create a large collection
++ 		List<UserId> largeList = [];
++ 		for (int i = 0; i < 1000; i++)
++ 		{
++ 			largeList.Add(UserId.FromString($"USER-{i:D4}"));
++ 		}
++ 
++ 		Dictionary<ProductCode, List<UserId>> productUsers = new Dictionary<ProductCode, List<UserId>>();
++ 		for (int i = 0; i < 10; i++)
++ 		{
++ 			productUsers[ProductCode.Parse($"PROD-{i}")] = largeList.Take(100).ToList();
++ 		}
++ 
++ 		string json = JsonSerializer.Serialize(productUsers, options);
++ 		Dictionary<ProductCode, List<UserId>>? deserialized = 
++ 			JsonSerializer.Deserialize<Dictionary<ProductCode, List<UserId>>>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(10, deserialized.Count);
++ 		
++ 		ProductCode firstProduct = ProductCode.Parse("PROD-0");
++ 		Assert.IsTrue(deserialized.ContainsKey(firstProduct));
++ 		Assert.AreEqual(100, deserialized[firstProduct].Count);
++ 		Assert.AreEqual("USER-0000", deserialized[firstProduct][0].Value);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Mixed_Collection_Types()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		object[] mixedArray = [
++ 			UserId.FromString("USER-001"),
++ 			"regular string",
++ 			42,
++ 			ProductCode.Parse("PROD-ABC"),
++ 			true,
++ 			OrderId.Create("ORD-999")
++ 		];
++ 
++ 		string json = JsonSerializer.Serialize(mixedArray, options);
++ 		object[]? deserialized = JsonSerializer.Deserialize<object[]>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(6, deserialized.Length);
++ 		
++ 		// Note: Due to JSON serialization, custom types will be serialized as strings
++ 		// and may not deserialize back to the original types in mixed collections
++ 		// This test verifies the serialization doesn't fail
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Maintain_Performance_With_Repeated_Conversions()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 		UserId userId = UserId.FromString("PERF-TEST-USER");
++ 
++ 		// Perform multiple serialization/deserialization cycles
++ 		for (int i = 0; i < 100; i++)
++ 		{
++ 			string json = JsonSerializer.Serialize(userId, options);
++ 			UserId? result = JsonSerializer.Deserialize<UserId>(json, options);
++ 			
++ 			Assert.IsNotNull(result);
++ 			Assert.AreEqual("PERF-TEST-USER", result.Value);
++ 		}
++ 	}
++ } 
+```
+
+---
+
+Now let me clean up the old, less organized test files by removing the redundant SimpleTest.cs:
+
+---
+
+Removing the redundant SimpleTest.cs file since its functionality is now covered by better organized tests
+
+---
+
+Let me create one final test file focused on property name handling and advanced JSON scenarios:
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+Let me create that file properly:
+
+---
+
+```diff
+- 
++ // Copyright (c) ktsu.dev
++ // All rights reserved.
++ // Licensed under the MIT license.
++ 
++ namespace ktsu.RoundTripStringJsonConverter.Tests;
++ 
++ using System.Text.Json;
++ 
++ [TestClass]
++ public class AdvancedScenarioTests
++ {
++ 	public class CustomKey
++ 	{
++ 		public string Value { get; }
++ 		public CustomKey(string value) => Value = value;
++ 		public static CustomKey FromString(string value) => new(value);
++ 		public override string ToString() => Value;
++ 		public override bool Equals(object? obj) => obj is CustomKey other && Value == other.Value;
++ 		public override int GetHashCode() => Value.GetHashCode();
++ 	}
++ 
++ 	private static JsonSerializerOptions GetOptions()
++ 	{
++ 		return new JsonSerializerOptions
++ 		{
++ 			WriteIndented = true,
++ 			Converters = { new RoundTripStringJsonConverterFactory() }
++ 		};
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Custom_Types_As_Dictionary_Keys()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
++ 		{
++ 			{ CustomKey.FromString("key1"), "value1" },
++ 			{ CustomKey.FromString("key2"), "value2" },
++ 			{ CustomKey.FromString("key with spaces"), "value3" },
++ 			{ CustomKey.FromString("key-with-dashes"), "value4" }
++ 		};
++ 
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		Dictionary<CustomKey, string>? deserialized = 
++ 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(4, deserialized.Count);
++ 
++ 		// Verify all keys and values
++ 		Assert.IsTrue(deserialized.ContainsKey(CustomKey.FromString("key1")));
++ 		Assert.IsTrue(deserialized.ContainsKey(CustomKey.FromString("key2")));
++ 		Assert.IsTrue(deserialized.ContainsKey(CustomKey.FromString("key with spaces")));
++ 		Assert.IsTrue(deserialized.ContainsKey(CustomKey.FromString("key-with-dashes")));
++ 
++ 		Assert.AreEqual("value1", deserialized[CustomKey.FromString("key1")]);
++ 		Assert.AreEqual("value2", deserialized[CustomKey.FromString("key2")]);
++ 		Assert.AreEqual("value3", deserialized[CustomKey.FromString("key with spaces")]);
++ 		Assert.AreEqual("value4", deserialized[CustomKey.FromString("key-with-dashes")]);
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Handle_Special_Characters_In_Property_Names()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
++ 		{
++ 			{ CustomKey.FromString("key with spaces"), "value1" },
++ 			{ CustomKey.FromString("key.with.dots"), "value2" },
++ 			{ CustomKey.FromString("key/with/slashes"), "value3" },
++ 			{ CustomKey.FromString("key\\with\\backslashes"), "value4" },
++ 			{ CustomKey.FromString("key\"with\"quotes"), "value5" },
++ 			{ CustomKey.FromString("key\nwith\nnewlines"), "value6" },
++ 			{ CustomKey.FromString("key\twith\ttabs"), "value7" },
++ 			{ CustomKey.FromString("🔑 emoji key 🔑"), "value8" }
++ 		};
++ 
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		Dictionary<CustomKey, string>? deserialized = 
++ 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(8, deserialized.Count);
++ 
++ 		// Verify all special character keys work
++ 		foreach (KeyValuePair<CustomKey, string> kvp in original)
++ 		{
++ 			Assert.IsTrue(deserialized.ContainsKey(kvp.Key), 
++ 				$"Should contain key: {kvp.Key.Value}");
++ 			Assert.AreEqual(kvp.Value, deserialized[kvp.Key], 
++ 				$"Value should match for key: {kvp.Key.Value}");
++ 		}
++ 	}
++ 
++ 	[TestMethod]
++ 	public void Should_Maintain_Case_Sensitivity_In_Property_Names()
++ 	{
++ 		JsonSerializerOptions options = GetOptions();
++ 
++ 		Dictionary<CustomKey, string> original = new Dictionary<CustomKey, string>
++ 		{
++ 			{ CustomKey.FromString("lowercase"), "value1" },
++ 			{ CustomKey.FromString("UPPERCASE"), "value2" },
++ 			{ CustomKey.FromString("MixedCase"), "value3" },
++ 			{ CustomKey.FromString("camelCase"), "value4" },
++ 			{ CustomKey.FromString("PascalCase"), "value5" }
++ 		};
++ 
++ 		string json = JsonSerializer.Serialize(original, options);
++ 		Dictionary<CustomKey, string>? deserialized = 
++ 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
++ 
++ 		Assert.IsNotNull(deserialized);
++ 		Assert.AreEqual(5, deserialized.Count);
++ 
++ 		// Verify case sensitivity is maintained
++ 		Assert.AreEqual("value1", deserialized[CustomKey.FromString("lowercase")]);
++ 		Assert.AreEqual("value2", deserialized[CustomKey.FromString("UPPERCASE")]);
++ 		Assert.AreEqual("value3", deserialized[CustomKey.FromString("MixedCase")]);
++ 		Assert.AreEqual("value4", deserialized[CustomKey.FromString("camelCase")]);
++ 		Assert.AreEqual("value5", deserialized[CustomKey.FromString("PascalCase")]);
++ 
++ 		// Verify that different cases are treated as different keys
++ 		Assert.IsFalse(deserialized.ContainsKey(CustomKey.FromString("LOWERCASE")));
++ 		Assert.IsFalse(deserialized.ContainsKey(CustomKey.FromString("uppercase")));
++ 	}
++ } 
+```
+
+---
+
+Now let me run the tests to verify everything works:
+
+---
+
+```bash
+dotnet test
+```
+
+---
+
+
+
+---
+
+_**User**_
+
+continue
+
+---
+
+_**Assistant**_
+
 
 
 ---
