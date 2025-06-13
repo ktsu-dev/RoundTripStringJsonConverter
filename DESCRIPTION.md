@@ -1,1 +1,1 @@
-A JSON converter for System.Text.Json that handles ToString and Parse methods for value types.
+A versatile JSON converter for System.Text.Json that handles ToString serialization and multiple deserialization methods (FromString, Parse, Create, Convert) with intelligent priority selection for value types and domain objects.
