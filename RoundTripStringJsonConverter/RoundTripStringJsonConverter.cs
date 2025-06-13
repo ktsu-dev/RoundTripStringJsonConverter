@@ -4,11 +4,10 @@
 
 namespace ktsu.RoundTripStringJsonConverter;
 
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
-using ktsu.Extensions;
 
 /// <summary>
 /// A factory for creating JSON converters that use a type's ToString and string conversion methods for serialization.
@@ -30,13 +29,50 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	{
 		foreach (string methodName in SupportedMethodNames)
 		{
-			if (type.TryFindMethod(methodName, BindingFlags.Static | BindingFlags.Public, out MethodInfo? method) &&
-				method is not null &&
-				method.GetParameters().Length > 0 &&
-				method.GetParameters()[0].ParameterType == typeof(string) &&
-				(method.ReturnType == type || (method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition())))
+			try
 			{
-				return method;
+				// Get all methods with the specified name and binding flags
+				MethodInfo[] methods = [.. type.GetMethods(BindingFlags.Static | BindingFlags.Public)
+					.Where(m => m.Name == methodName)];
+
+				// Find the first method that matches our criteria
+				foreach (MethodInfo method in methods)
+				{
+					ParameterInfo[] parameters = method.GetParameters();
+					if (parameters.Length > 0 &&
+						parameters[0].ParameterType == typeof(string) &&
+						(method.ReturnType == type ||
+						 (method.ReturnType.IsGenericType && type.IsGenericType &&
+						  method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition())))
+					{
+						return method;
+					}
+				}
+			}
+			catch (AmbiguousMatchException)
+			{
+				// If there's an ambiguous match, try to find the specific overload we want
+				try
+				{
+					MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public, null, [typeof(string)], null);
+					if (method is not null &&
+						(method.ReturnType == type ||
+						 (method.ReturnType.IsGenericType && type.IsGenericType &&
+						  method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition())))
+					{
+						return method;
+					}
+				}
+				catch (ArgumentException)
+				{
+					// Continue to next method name if this one fails
+					continue;
+				}
+				catch (AmbiguousMatchException)
+				{
+					// Continue to next method name if this one fails
+					continue;
+				}
 			}
 		}
 		return null;
