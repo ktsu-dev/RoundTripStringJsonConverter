@@ -5,14 +5,14 @@
 #pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
 #pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
 
-namespace ktsu.ToStringJsonConverter.Tests;
+namespace ktsu.RoundTripStringJsonConverter.Tests;
 
 using System.Text.Json;
 
-using ktsu.ToStringJsonConverter;
+using ktsu.RoundTripStringJsonConverter;
 
 [TestClass]
-public class ToStringJsonConverterFactoryTests
+public class RoundTripStringJsonConverterFactoryTests
 {
 	public class TestClass
 	{
@@ -37,14 +37,14 @@ public class ToStringJsonConverterFactoryTests
 	private static JsonSerializerOptions GetOptions()
 	{
 		var options = new JsonSerializerOptions();
-		options.Converters.Add(new ToStringJsonConverterFactory());
+		options.Converters.Add(new RoundTripStringJsonConverterFactory());
 		return options;
 	}
 
 	[TestMethod]
 	public void CanConvertShouldReturnTrueForValidType()
 	{
-		var factory = new ToStringJsonConverterFactory();
+		var factory = new RoundTripStringJsonConverterFactory();
 		Assert.IsTrue(factory.CanConvert(typeof(TestClass)));
 		Assert.IsTrue(factory.CanConvert(typeof(TestClass<int>)));
 	}
@@ -52,14 +52,14 @@ public class ToStringJsonConverterFactoryTests
 	[TestMethod]
 	public void CanConvertShouldReturnFalseForInvalidType()
 	{
-		var factory = new ToStringJsonConverterFactory();
+		var factory = new RoundTripStringJsonConverterFactory();
 		Assert.IsFalse(factory.CanConvert(typeof(string)));
 	}
 
 	[TestMethod]
 	public void CreateConverterShouldReturnConverterForValidType()
 	{
-		var factory = new ToStringJsonConverterFactory();
+		var factory = new RoundTripStringJsonConverterFactory();
 		var converter = factory.CreateConverter(typeof(TestClass), GetOptions());
 		Assert.IsNotNull(converter);
 		converter = factory.CreateConverter(typeof(TestClass<int>), GetOptions());

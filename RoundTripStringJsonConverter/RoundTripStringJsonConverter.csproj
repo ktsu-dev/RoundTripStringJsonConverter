@@ -1,0 +1,9 @@
+﻿
+<Project Sdk="ktsu.Sdk.Lib">
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CA1810;S2743;S3963;</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ktsu.Extensions" />
+  </ItemGroup>
+</Project>

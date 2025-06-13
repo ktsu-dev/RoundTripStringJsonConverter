@@ -2,7 +2,7 @@
 // All rights reserved.
 // Licensed under the MIT license.
 
-namespace ktsu.ToStringJsonConverter;
+namespace ktsu.RoundTripStringJsonConverter;
 
 using System.Diagnostics;
 using System.Reflection;
@@ -14,7 +14,7 @@ using ktsu.Extensions;
 /// <summary>
 /// A factory for creating JSON converters that use a type's ToString and FromString methods for serialization.
 /// </summary>
-public class ToStringJsonConverterFactory : JsonConverterFactory
+public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 {
 	/// <summary>
 	/// Determines whether the specified type can be converted by this factory.
@@ -38,7 +38,7 @@ public class ToStringJsonConverterFactory : JsonConverterFactory
 	public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(typeToConvert);
-		var converterType = typeof(ToStringJsonConverter<>).MakeGenericType(typeToConvert);
+		var converterType = typeof(RoundTripStringJsonConverter<>).MakeGenericType(typeToConvert);
 		return (JsonConverter)Activator.CreateInstance(converterType, BindingFlags.Instance | BindingFlags.Public, binder: null, args: null, culture: null)!;
 	}
 
@@ -46,11 +46,11 @@ public class ToStringJsonConverterFactory : JsonConverterFactory
 	/// JSON converter that uses a type's ToString and FromString methods for serialization.
 	/// </summary>
 	/// <typeparam name="T">The type to be converted.</typeparam>
-	private sealed class ToStringJsonConverter<T> : JsonConverter<T>
+	private sealed class RoundTripStringJsonConverter<T> : JsonConverter<T>
 	{
 		private static readonly MethodInfo? FromStringMethod;
 
-		static ToStringJsonConverter()
+		static RoundTripStringJsonConverter()
 		{
 			if (typeof(T).TryFindMethod("FromString", BindingFlags.Static | BindingFlags.Public, out FromStringMethod))
 			{

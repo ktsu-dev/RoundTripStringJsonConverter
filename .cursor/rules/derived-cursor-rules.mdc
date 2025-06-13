@@ -1,0 +1,70 @@
+---
+description: AI rules derived by SpecStory from the project AI interaction history
+globs: *
+---
+
+## PROJECT RULES, CODING STANDARDS, WORKFLOW GUIDELINES, REFERENCES, DOCUMENTATION STRUCTURES, AND BEST PRACTICES
+
+## PROJECT DESCRIPTION
+
+[To be completed: A high-level summary of the project's purpose, goals, and target audience.]
+
+## TECH STACK
+
+[To be completed: Programming languages, frameworks, libraries, databases, and other technologies used in the project.]
+
+## PROJECT STRUCTURE
+
+[To be completed: Description of the project directory structure, module organization, and key components.]
+
+## CODING STANDARDS
+
+*   **General Principles:**
+    *   Write clean, readable, and maintainable code.
+    *   Follow the principle of least astonishment.
+    *   Strive for simplicity and avoid unnecessary complexity.
+*   **Naming Conventions:**
+    *   Use descriptive and meaningful names for variables, functions, and classes.
+    *   Follow established naming conventions for the language and framework being used.
+    *   [To be completed: Any project-specific naming conventions.]
+*   **Code Formatting:**
+    *   Maintain consistent code formatting throughout the project.
+    *   Use a code formatter to automatically enforce formatting rules.
+    *   [To be completed: Specific code formatting guidelines, e.g., indentation, line length.]
+*   **Commenting:**
+    *   Write clear and concise comments to explain complex logic or non-obvious code.
+    *   Generate API documentation from comments where appropriate.
+    *   [To be completed: Specific commenting guidelines or standards.]
+*   **Error Handling:**
+    *   Implement robust error handling to prevent crashes and unexpected behavior.
+    *   Use exceptions to signal errors and handle them gracefully.
+    *   Log errors and warnings to aid in debugging.
+*   **Security:**
+    *   Follow security best practices to prevent vulnerabilities.
+    *   Sanitize user input to prevent injection attacks.
+    *   Use secure communication protocols.
+    *   [To be completed: Specific security requirements or guidelines.]
+
+## WORKFLOW & RELEASE RULES
+
+[To be completed: Details about the branching strategy, pull request process, code review guidelines, testing procedures, and release management.]
+
+## DEBUGGING
+
+[To be completed: Preferred debugging techniques, tools, and strategies.]
+
+## PROJECT DOCUMENTATION & CONTEXT SYSTEM
+
+[To be completed: Information on how the project is documented, where documentation is stored, and how context is managed.]
+
+## STYLE GUIDES
+
+[To be completed: Specific style guides for different languages or frameworks used in the project.]
+
+## REFERENCES
+
+[To be completed: Links to relevant documentation, articles, or other resources.]
+
+## NAMING
+
+*   When renaming libraries or components, the new name should be descriptive and clearly indicate the component's purpose. For example, rename to "RoundTripStringJsonConverter".
