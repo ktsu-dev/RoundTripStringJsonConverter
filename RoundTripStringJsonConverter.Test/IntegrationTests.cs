@@ -5,6 +5,7 @@
 namespace ktsu.RoundTripStringJsonConverter.Tests;
 
 using System.Text.Json;
+using System.Diagnostics.CodeAnalysis;
 
 [TestClass]
 public class IntegrationTests
@@ -49,15 +50,19 @@ public class IntegrationTests
 	{
 		public OrderId Id { get; set; } = null!;
 		public UserId CustomerId { get; set; } = null!;
-		public IList<ProductCode> Products { get; } = [];
-		public IDictionary<CategoryName, int> CategoryCounts { get; } = new Dictionary<CategoryName, int>();
+		[SuppressMessage("Design", "CA2227:Collection properties should be read only", Justification = "Required for JSON deserialization")]
+		public IList<ProductCode> Products { get; set; } = [];
+		[SuppressMessage("Design", "CA2227:Collection properties should be read only", Justification = "Required for JSON deserialization")]
+		public IDictionary<CategoryName, int> CategoryCounts { get; set; } = new Dictionary<CategoryName, int>();
 		public DateTime OrderDate { get; set; }
 	}
 
 	public class OrderSummary
 	{
-		public IList<Order> Orders { get; } = [];
-		public IDictionary<UserId, int> CustomerOrderCounts { get; } = new Dictionary<UserId, int>();
+		[SuppressMessage("Design", "CA2227:Collection properties should be read only", Justification = "Required for JSON deserialization")]
+		public IList<Order> Orders { get; set; } = [];
+		[SuppressMessage("Design", "CA2227:Collection properties should be read only", Justification = "Required for JSON deserialization")]
+		public IDictionary<UserId, int> CustomerOrderCounts { get; set; } = new Dictionary<UserId, int>();
 		public ProductCode? MostPopularProduct { get; set; }
 	}
 
@@ -66,6 +71,7 @@ public class IntegrationTests
 		return new JsonSerializerOptions
 		{
 			WriteIndented = true,
+			IncludeFields = true,
 			Converters = { new RoundTripStringJsonConverterFactory() }
 		};
 	}

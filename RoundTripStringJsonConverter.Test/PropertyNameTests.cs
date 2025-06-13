@@ -5,6 +5,7 @@
 namespace ktsu.RoundTripStringJsonConverter.Tests;
 
 using System.Text.Json;
+using System.Diagnostics.CodeAnalysis;
 
 [TestClass]
 public class PropertyNameTests
@@ -21,9 +22,12 @@ public class PropertyNameTests
 
 	public class TestObject
 	{
-		public IDictionary<CustomKey, string> KeyValuePairs { get; } = new Dictionary<CustomKey, string>();
-		public IDictionary<CustomKey, CustomKey> KeyKeyPairs { get; } = new Dictionary<CustomKey, CustomKey>();
-		public IDictionary<CustomKey, List<CustomKey>> KeyListPairs { get; } = new Dictionary<CustomKey, List<CustomKey>>();
+		[SuppressMessage("Design", "CA2227:Collection properties should be read only", Justification = "Required for JSON deserialization")]
+		public IDictionary<CustomKey, string> KeyValuePairs { get; set; } = new Dictionary<CustomKey, string>();
+		[SuppressMessage("Design", "CA2227:Collection properties should be read only", Justification = "Required for JSON deserialization")]
+		public IDictionary<CustomKey, CustomKey> KeyKeyPairs { get; set; } = new Dictionary<CustomKey, CustomKey>();
+		[SuppressMessage("Design", "CA2227:Collection properties should be read only", Justification = "Required for JSON deserialization")]
+		public IDictionary<CustomKey, List<CustomKey>> KeyListPairs { get; set; } = new Dictionary<CustomKey, List<CustomKey>>();
 	}
 
 	private static JsonSerializerOptions GetOptions()

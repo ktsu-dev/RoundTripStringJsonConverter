@@ -68,3 +68,13 @@ globs: *
 ## NAMING
 
 *   When renaming libraries or components, the new name should be descriptive and clearly indicate the component's purpose. For example, rename to "RoundTripStringJsonConverter".
+
+## LINTING RULES
+
+*   Address all linter errors identified during build and test processes. Examples of errors to address include:
+    *   Unnecessary using directives (IDE0005)
+    *   Usage of explicit types instead of 'var' (IDE0008)
+    *   Catching overly broad exception types (CA1031)
+    *   Formatting issues (IDE0055)
+    *   Multiple blank lines (IDE2000)
+    *   Simplifiable collection initialization (IDE0300, IDE0305)
