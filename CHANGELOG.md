@@ -1,40 +1,34 @@
-# Changelog
+## v1.0.0 (major)
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [2.0.0] - 2024-01-XX
-
-### Added
-- **Multiple Conversion Method Support**: Added support for `Parse`, `Create`, and `Convert` methods in addition to `FromString`
-- **Method Priority System**: Intelligent selection of conversion methods with priority order: FromString > Parse > Create > Convert
-- **Enhanced Type Detection**: Improved algorithm to find the most appropriate conversion method for each type
-- **Comprehensive Test Suite**: Added extensive unit tests covering edge cases, error scenarios, and integration tests
-- **Advanced Error Handling**: Better exception handling and propagation from conversion methods
-- **Performance Optimizations**: Improved reflection caching and method lookup performance
-
-### Changed
-- **BREAKING**: Renamed library from `ToStringJsonConverter` to `RoundTripStringJsonConverter`
-- **BREAKING**: Renamed main class from `ToStringJsonConverterFactory` to `RoundTripStringJsonConverterFactory`
-- **BREAKING**: Changed namespace from `ktsu.ToStringJsonConverter` to `ktsu.RoundTripStringJsonConverter`
-- Updated all documentation to reflect new name and enhanced functionality
-- Improved method signature validation for better type safety
-
-### Fixed
-- Enhanced null argument validation
-- Better handling of types with invalid method signatures
-- Improved error messages for debugging
-
-### Migration Guide
-- Update package reference to `ktsu.RoundTripStringJsonConverter`
-- Update using statements: `using ktsu.RoundTripStringJsonConverter;`
-- Update converter instantiation: `new RoundTripStringJsonConverterFactory()`
-- Existing `FromString` methods continue to work unchanged
-- You can now also use `Parse`, `Create`, or `Convert` methods
-
-## [1.2.4] - Previous Release
-
-Initial release of repository with no prior history.
-
+- Refactor test method names to camel case ([@matt-edmondson](https://github.com/matt-edmondson))
+- Enhance RoundTripStringJsonConverter to support multiple string conversion methods ([@matt-edmondson](https://github.com/matt-edmondson))
+- Renamed metadata files ([@matt-edmondson](https://github.com/matt-edmondson))
+- Refactor test files to improve code organization and consistency ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add scripts for automated metadata generation and versioning ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add null check in TestRoundTrip to prevent null exception ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update README with comprehensive documentation and usage examples ([@matt-edmondson](https://github.com/matt-edmondson))
+- 1.0.0 ([@matt-edmondson](https://github.com/matt-edmondson))
+- Refactor test classes to utilize primary constructor syntax for string types ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add documentation comments ([@matt-edmondson](https://github.com/matt-edmondson))
+- Refactor and enhance testing suite for RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
+- Rename package to ktsu.ToStringJsonConverter and update ktsu.Extensions to version 1.0.30 ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update Extensions package, and project version ([@matt-edmondson](https://github.com/matt-edmondson))
+- Fix compilation errors and warnings in test suite for RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add SpecStory configuration files and rename library to RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
+- Apply new editorconfig ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update LICENSE file to LICENSE.md with copyright notice ([@matt-edmondson](https://github.com/matt-edmondson))
+- Refactor DESCRIPTION and update project SDK references to ktsu.Sdk.Lib and ktsu.Sdk.Test ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update packages ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update ktsu.Extensions package reference to version 1.5.5 ([@matt-edmondson](https://github.com/matt-edmondson))
+- Migrate ktsu.io to ktsu namespace ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add project files. ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add new SpecStory history file for untitled entry on 2025-06-13 ([@matt-edmondson](https://github.com/matt-edmondson))
+- Suppress specific warnings in csproj ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update ktsu.Extensions package reference to version 1.0.31 ([@matt-edmondson](https://github.com/matt-edmondson))
+- Migrate ktsu.io to ktsu namespace ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update documentation and changelog for RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
+- Remove Directory.Build.props and Directory.Build.targets files; add copyright headers to ToStringJsonConverter and test files. ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add mailmap ([@matt-edmondson](https://github.com/matt-edmondson))
+- Replace LICENSE file with LICENSE.md and update copyright information ([@matt-edmondson](https://github.com/matt-edmondson))
+- Enhance RoundTripStringJsonConverter and fix collection handling in tests ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add LICENSE template ([@matt-edmondson](https://github.com/matt-edmondson))
