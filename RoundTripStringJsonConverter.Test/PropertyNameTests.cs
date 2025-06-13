@@ -4,8 +4,8 @@
 
 namespace ktsu.RoundTripStringJsonConverter.Tests;
 
-using System.Text.Json;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 [TestClass]
 public class PropertyNameTests
