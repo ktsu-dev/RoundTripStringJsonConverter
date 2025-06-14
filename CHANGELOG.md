@@ -1,5 +1,8 @@
 ## v1.0.1-pre.1 (prerelease)
 
+Incremental prerelease update.
+## v1.0.1-pre.1 (prerelease)
+
 Changes since v1.0.0:
 ## v1.0.0 (major)
 
