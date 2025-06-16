@@ -1,3 +1,8 @@
+## v1.0.2 (patch)
+
+Changes since v1.0.1:
+
+- Update copyright notice and enhance winget manifest script ([@matt-edmondson](https://github.com/matt-edmondson))
 ## v1.0.1 (patch)
 
 Changes since v1.0.0:
@@ -8,7 +13,7 @@ Changes since v1.0.0:
 Changes since v1.0.1-pre.1:
 ## v1.0.1-pre.1 (prerelease)
 
-Changes since v1.0.0:
+Incremental prerelease update.
 ## v1.0.0 (major)
 
 - Refactor test method names to camel case ([@matt-edmondson](https://github.com/matt-edmondson))
