@@ -1,4 +1,4 @@
-## v1.0.1-pre.1 (prerelease)
+## v1.0.1-pre.2 (prerelease)
 
 Changes since v1.0.1-pre.1:
 ## v1.0.1-pre.1 (prerelease)
