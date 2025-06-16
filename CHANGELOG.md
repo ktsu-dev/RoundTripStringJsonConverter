@@ -1,3 +1,8 @@
+## v1.0.1 (patch)
+
+Changes since v1.0.0:
+
+- [patch] Force a patch ([@matt-edmondson](https://github.com/matt-edmondson))
 ## v1.0.1-pre.2 (prerelease)
 
 Changes since v1.0.1-pre.1:
