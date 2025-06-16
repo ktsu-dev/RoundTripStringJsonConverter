@@ -5,6 +5,7 @@
 namespace ktsu.RoundTripStringJsonConverter.Tests;
 
 using System.Text.Json;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class EdgeCaseTests
@@ -156,23 +157,23 @@ public class EdgeCaseTests
 		JsonSerializerOptions options = GetOptions();
 
 		// Test number
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<ValidStringType>("123", options));
 
 		// Test boolean
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<ValidStringType>("true", options));
 
 		// Test null
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<ValidStringType>("null", options));
 
 		// Test object
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<ValidStringType>("{}", options));
 
 		// Test array
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<ValidStringType>("[]", options));
 	}
 
@@ -182,7 +183,7 @@ public class EdgeCaseTests
 		JsonSerializerOptions options = GetOptions();
 		string json = "\"throw\"";
 
-		Assert.ThrowsException<ArgumentException>(() =>
+		Assert.ThrowsExactly<ArgumentException>(() =>
 			JsonSerializer.Deserialize<TypeWithExceptionInFromString>(json, options));
 	}
 
@@ -192,7 +193,7 @@ public class EdgeCaseTests
 		JsonSerializerOptions options = GetOptions();
 		TypeWithExceptionInToString instance = new("throw");
 
-		Assert.ThrowsException<InvalidOperationException>(() =>
+		Assert.ThrowsExactly<InvalidOperationException>(() =>
 			JsonSerializer.Serialize(instance, options));
 	}
 
@@ -238,8 +239,8 @@ public class EdgeCaseTests
 	{
 		RoundTripStringJsonConverterFactory factory = new();
 
-		Assert.ThrowsException<ArgumentNullException>(() => factory.CanConvert(null!));
-		Assert.ThrowsException<ArgumentNullException>(() => factory.CreateConverter(null!, GetOptions()));
-		Assert.ThrowsException<ArgumentNullException>(() => factory.CreateConverter(typeof(ValidStringType), null!));
+		Assert.ThrowsExactly<ArgumentNullException>(() => factory.CanConvert(null!));
+		Assert.ThrowsExactly<ArgumentNullException>(() => factory.CreateConverter(null!, GetOptions()));
+		Assert.ThrowsExactly<ArgumentNullException>(() => factory.CreateConverter(typeof(ValidStringType), null!));
 	}
 }

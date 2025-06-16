@@ -5,6 +5,7 @@
 namespace ktsu.RoundTripStringJsonConverter.Tests;
 
 using System.Text.Json;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class ParameterizedTests
@@ -71,7 +72,7 @@ public class ParameterizedTests
 	{
 		JsonSerializerOptions options = GetOptions();
 
-		Assert.ThrowsException<JsonException>(() =>
+		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<TestType>(invalidJson, options));
 	}
 

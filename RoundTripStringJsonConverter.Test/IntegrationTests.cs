@@ -6,6 +6,7 @@ namespace ktsu.RoundTripStringJsonConverter.Tests;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class IntegrationTests

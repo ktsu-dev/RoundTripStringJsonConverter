@@ -5,6 +5,7 @@
 namespace ktsu.RoundTripStringJsonConverter.Tests;
 
 using System.Text.Json;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class AdvancedScenarioTests

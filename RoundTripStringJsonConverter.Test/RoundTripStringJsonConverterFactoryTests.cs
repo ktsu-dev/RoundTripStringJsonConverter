@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using ktsu.RoundTripStringJsonConverter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class RoundTripStringJsonConverterFactoryTests
@@ -55,6 +56,7 @@ public class RoundTripStringJsonConverterFactoryTests
 	{
 		public string Value { get; set; } = string.Empty;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "Testing interfaces like this")]
 		public static TestGenericClass<TNumber> FromString<TSelf>(string value) => new() { Value = value };
 
 		public override string ToString() => Value;
@@ -172,18 +174,15 @@ public class RoundTripStringJsonConverterFactoryTests
 	{
 		JsonSerializerOptions options = GetOptions();
 		string json = "123";
-		Assert.ThrowsException<JsonException>(() => JsonSerializer.Deserialize<TestClassWithFromString>(json, options));
-		Assert.ThrowsException<JsonException>(() => JsonSerializer.Deserialize<TestClassWithParse>(json, options));
-		Assert.ThrowsException<JsonException>(() => JsonSerializer.Deserialize<TestClassWithCreate>(json, options));
-		Assert.ThrowsException<JsonException>(() => JsonSerializer.Deserialize<TestClassWithConvert>(json, options));
+		Assert.ThrowsExactly<JsonException>(() => JsonSerializer.Deserialize<TestClassWithFromString>(json, options));
+		Assert.ThrowsExactly<JsonException>(() => JsonSerializer.Deserialize<TestClassWithParse>(json, options));
+		Assert.ThrowsExactly<JsonException>(() => JsonSerializer.Deserialize<TestClassWithCreate>(json, options));
+		Assert.ThrowsExactly<JsonException>(() => JsonSerializer.Deserialize<TestClassWithConvert>(json, options));
 	}
 
 	[TestMethod]
 	public void ShouldPrioritizeFromStringOverOtherMethods()
 	{
-		// Test class with multiple conversion methods - FromString should be prioritized
-		JsonSerializerOptions options = GetOptions();
-
 		// This test verifies that when multiple methods exist, FromString is used (since it's first in the priority order)
 		RoundTripStringJsonConverterFactory factory = new();
 		Assert.IsTrue(factory.CanConvert(typeof(TestClassWithFromString)));

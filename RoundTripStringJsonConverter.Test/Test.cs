@@ -8,6 +8,7 @@
 namespace ktsu.RoundTripStringJsonConverter.Test;
 
 using System.Text.Json;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class Test
