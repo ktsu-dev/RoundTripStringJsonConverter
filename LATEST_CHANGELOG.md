@@ -1,6 +1,3 @@
-## v1.0.3 (patch)
+## v1.0.3
 
-Changes since v1.0.2:
-
-- Update SDKs and enhance project configuration ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add CompatibilitySuppressions.xml for diagnostic suppression in RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
+No significant changes detected since v1.0.3.
