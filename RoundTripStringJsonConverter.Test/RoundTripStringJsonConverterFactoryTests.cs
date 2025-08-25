@@ -134,6 +134,11 @@ public class RoundTripStringJsonConverterFactoryTests
 		{ Value = "test value" };
 		json = JsonSerializer.Serialize(convertInstance, options);
 		Assert.AreEqual("\"test value\"", json);
+
+		// Hit null branch in converter's Write
+		TestClassWithConvert? nullableInstance = null;
+		json = JsonSerializer.Serialize(nullableInstance, options);
+		Assert.AreEqual("null", json);
 	}
 
 	[TestMethod]

@@ -73,6 +73,20 @@ public class EdgeCaseTests
 		public override string ToString() => Value;
 	}
 
+	public class TypeWithAmbiguousFromString(string value)
+	{
+		public string Value { get; } = value;
+
+		// Two overloads to create ambiguity
+		public static TypeWithAmbiguousFromString FromString(string value) => new(value);
+		public static TypeWithAmbiguousFromString FromString(string value, IFormatProvider? _) => new(value);
+
+		// Also provide Parse so fallback path in factory can be exercised
+		public static TypeWithAmbiguousFromString Parse(string value) => new(value + ":parsed");
+
+		public override string ToString() => Value;
+	}
+
 	public class TypeWithWrongParameterType
 	{
 		public string Value { get; set; } = string.Empty;
@@ -218,6 +232,19 @@ public class EdgeCaseTests
 		Assert.IsFalse(factory.CanConvert(typeof(DateTime)));
 		Assert.IsFalse(factory.CanConvert(typeof(Guid)));
 		Assert.IsFalse(factory.CanConvert(typeof(object)));
+	}
+
+	[TestMethod]
+	public void Should_Handle_Ambiguous_FromString_By_Falling_Back()
+	{
+		JsonSerializerOptions options = GetOptions();
+		string json = "\"abc\"";
+
+		// With ambiguity present, factory's catch(AmbiguousMatchException) path should still resolve a valid method
+		TypeWithAmbiguousFromString? result = JsonSerializer.Deserialize<TypeWithAmbiguousFromString>(json, options);
+		Assert.IsNotNull(result);
+		// Either FromString or Parse may be selected depending on reflection path; both produce non-null; ensure it's one of expected shapes
+		Assert.IsTrue(result.Value is "abc" or "abc:parsed");
 	}
 
 	[TestMethod]

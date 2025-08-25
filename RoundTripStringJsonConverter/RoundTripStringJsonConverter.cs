@@ -9,6 +9,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+#if !NET6_0_OR_GREATER
+using ThrowHelper = ktsu.RoundTripStringJsonConverter.ArgumentNullExceptionPolyfill;
+#else
+using ThrowHelper = System.ArgumentNullException;
+#endif
 
 /// <summary>
 /// A factory for creating JSON converters that use a type's ToString and string conversion methods for serialization.
@@ -153,7 +158,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// <returns>True if the type can be converted; otherwise, false.</returns>
 	public override bool CanConvert(Type typeToConvert)
 	{
-		ArgumentNullException.ThrowIfNull(typeToConvert);
+		ThrowHelper.ThrowIfNull(typeToConvert, nameof(typeToConvert));
 
 		// Don't convert built-in types
 		if (IsBuiltInType(typeToConvert))
@@ -173,8 +178,8 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// <returns>A JSON converter for the specified type.</returns>
 	public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
 	{
-		ArgumentNullException.ThrowIfNull(typeToConvert);
-		ArgumentNullException.ThrowIfNull(options);
+		ThrowHelper.ThrowIfNull(typeToConvert, nameof(typeToConvert));
+		ThrowHelper.ThrowIfNull(options, nameof(options));
 		Type converterType = typeof(RoundTripStringJsonConverter<>).MakeGenericType(typeToConvert);
 		return (JsonConverter)Activator.CreateInstance(converterType, BindingFlags.Instance | BindingFlags.Public, binder: null, args: null, culture: null)!;
 	}
@@ -186,15 +191,16 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// <typeparam name="T">The type to be converted.</typeparam>
 	private sealed class RoundTripStringJsonConverter<T> : JsonConverter<T>
 	{
-		private static readonly MethodInfo? StringConversionMethod;
+		private static readonly MethodInfo? StringConversionMethod = CreateStringConversionMethod();
 
-		static RoundTripStringJsonConverter()
+		private static MethodInfo? CreateStringConversionMethod()
 		{
-			StringConversionMethod = FindStringConversionMethod(typeof(T));
-			if (StringConversionMethod is not null && StringConversionMethod.ContainsGenericParameters)
+			MethodInfo? method = FindStringConversionMethod(typeof(T));
+			if (method is not null && method.ContainsGenericParameters)
 			{
-				StringConversionMethod = StringConversionMethod.MakeGenericMethod(typeof(T));
+				method = method.MakeGenericMethod(typeof(T));
 			}
+			return method;
 		}
 
 		/// <summary>
@@ -211,7 +217,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// <returns>The converted value.</returns>
 		public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			ArgumentNullException.ThrowIfNull(typeToConvert);
+			ThrowHelper.ThrowIfNull(typeToConvert, nameof(typeToConvert));
 
 			// Handle null token - this converter should always throw for null since our types don't support null conversion
 			if (reader.TokenType == JsonTokenType.Null)
@@ -225,7 +231,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			}
 
 			string? stringValue = reader.GetString();
-			ArgumentNullException.ThrowIfNull(stringValue, nameof(stringValue));
+			ThrowHelper.ThrowIfNull(stringValue, nameof(stringValue));
 
 			try
 			{
@@ -238,6 +244,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			}
 		}
 
+#if NET6_0_OR_GREATER
 		/// <summary>
 		/// Reads and converts the JSON to the specified type as a property name.
 		/// </summary>
@@ -247,10 +254,10 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// <returns>The converted value.</returns>
 		public override T ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
-			ArgumentNullException.ThrowIfNull(typeToConvert);
+			ThrowHelper.ThrowIfNull(typeToConvert, nameof(typeToConvert));
 
 			string? stringValue = reader.GetString();
-			ArgumentNullException.ThrowIfNull(stringValue, nameof(stringValue));
+			ThrowHelper.ThrowIfNull(stringValue, nameof(stringValue));
 
 			try
 			{
@@ -262,6 +269,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 				throw ex.InnerException;
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Writes the specified value as JSON.
@@ -271,7 +279,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// <param name="options">Options to control the behavior during serialization and deserialization.</param>
 		public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
 		{
-			ArgumentNullException.ThrowIfNull(writer);
+			ThrowHelper.ThrowIfNull(writer, nameof(writer));
 			if (value is null)
 			{
 				writer.WriteNullValue();
@@ -282,6 +290,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			writer.WriteStringValue(stringValue);
 		}
 
+#if NET6_0_OR_GREATER
 		/// <summary>
 		/// Writes the specified value as a JSON property name.
 		/// </summary>
@@ -290,11 +299,12 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// <param name="options">Options to control the behavior during serialization and deserialization.</param>
 		public override void WriteAsPropertyName(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
 		{
-			ArgumentNullException.ThrowIfNull(writer);
-			ArgumentNullException.ThrowIfNull(value);
+			ThrowHelper.ThrowIfNull(writer, nameof(writer));
+			ThrowHelper.ThrowIfNull(value, nameof(value));
 
 			string? stringValue = value.ToString();
 			writer.WritePropertyName(stringValue ?? string.Empty);
 		}
+#endif
 	}
 }
