@@ -63,7 +63,6 @@ public class ParameterizedTests
 	[DataRow("123")]
 	[DataRow("true")]
 	[DataRow("false")]
-	[DataRow("null")]
 	[DataRow("{}")]
 	[DataRow("[]")]
 	[DataRow("[1,2,3]")]

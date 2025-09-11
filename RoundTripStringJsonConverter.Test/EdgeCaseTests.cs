@@ -178,10 +178,6 @@ public class EdgeCaseTests
 		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<ValidStringType>("true", options));
 
-		// Test null
-		Assert.ThrowsExactly<JsonException>(() =>
-			JsonSerializer.Deserialize<ValidStringType>("null", options));
-
 		// Test object
 		Assert.ThrowsExactly<JsonException>(() =>
 			JsonSerializer.Deserialize<ValidStringType>("{}", options));
