@@ -6,6 +6,7 @@ Changes since v1.0.5-pre.4:
 - Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
 - Sync .gitignore ([@ktsu[bot]](https://github.com/ktsu[bot]))
 - Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
 - Sync .specstory\.gitignore ([@ktsu[bot]](https://github.com/ktsu[bot]))
 ## v1.0.5-pre.4 (prerelease)
 
