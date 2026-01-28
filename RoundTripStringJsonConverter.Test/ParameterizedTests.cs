@@ -97,7 +97,7 @@ public class ParameterizedTests
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(BuiltInTypes), DynamicDataSourceType.Property)]
+	[DynamicData(nameof(BuiltInTypes))]
 	public void Should_Not_Convert_Built_In_Types(Type type)
 	{
 		ArgumentNullException.ThrowIfNull(type);
@@ -120,7 +120,7 @@ public class ParameterizedTests
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(StringLengths), DynamicDataSourceType.Property)]
+	[DynamicData(nameof(StringLengths))]
 	public void Should_Handle_Various_String_Lengths(int length)
 	{
 		JsonSerializerOptions options = GetOptions();
@@ -148,7 +148,7 @@ public class ParameterizedTests
 	}
 
 	[TestMethod]
-	[DynamicData(nameof(RepeatedValues), DynamicDataSourceType.Property)]
+	[DynamicData(nameof(RepeatedValues))]
 	public void Should_Handle_Repeated_Serialization_Consistently(string value, int iteration)
 	{
 		JsonSerializerOptions options = GetOptions();

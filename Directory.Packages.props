@@ -6,6 +6,7 @@
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="Microsoft.SourceLink.AzureRepos.Git" Version="8.0.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
-    <PackageVersion Include="ktsu.Semantics.Strings" Version="1.0.21" />
+    <PackageVersion Include="ktsu.Semantics.Strings" Version="1.0.28" />
+    <PackageVersion Include="Polyfill" Version="9.7.6" />
   </ItemGroup>
 </Project>

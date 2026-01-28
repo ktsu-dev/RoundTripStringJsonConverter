@@ -212,10 +212,10 @@ public class EdgeCaseTests
 	{
 		RoundTripStringJsonConverterFactory factory = new();
 
-		Assert.IsFalse(factory.CanConvert(typeof(TypeWithoutConversionMethod)));
-		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongSignature)));
-		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongParameterType)));
-		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongReturnType)));
+		Assert.IsFalse(factory.CanConvert(typeof(TypeWithoutConversionMethod)), "Factory should not convert types without a conversion method");
+		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongSignature)), "Factory should not convert types with non-static FromString method");
+		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongParameterType)), "Factory should not convert types with wrong parameter type in FromString");
+		Assert.IsFalse(factory.CanConvert(typeof(TypeWithWrongReturnType)), "Factory should not convert types with wrong return type in FromString");
 	}
 
 	[TestMethod]
@@ -223,11 +223,11 @@ public class EdgeCaseTests
 	{
 		RoundTripStringJsonConverterFactory factory = new();
 
-		Assert.IsFalse(factory.CanConvert(typeof(string)));
-		Assert.IsFalse(factory.CanConvert(typeof(int)));
-		Assert.IsFalse(factory.CanConvert(typeof(DateTime)));
-		Assert.IsFalse(factory.CanConvert(typeof(Guid)));
-		Assert.IsFalse(factory.CanConvert(typeof(object)));
+		Assert.IsFalse(factory.CanConvert(typeof(string)), "Factory should not convert string type");
+		Assert.IsFalse(factory.CanConvert(typeof(int)), "Factory should not convert int type");
+		Assert.IsFalse(factory.CanConvert(typeof(DateTime)), "Factory should not convert DateTime type");
+		Assert.IsFalse(factory.CanConvert(typeof(Guid)), "Factory should not convert Guid type");
+		Assert.IsFalse(factory.CanConvert(typeof(object)), "Factory should not convert object type");
 	}
 
 	[TestMethod]
@@ -240,7 +240,7 @@ public class EdgeCaseTests
 		TypeWithAmbiguousFromString? result = JsonSerializer.Deserialize<TypeWithAmbiguousFromString>(json, options);
 		Assert.IsNotNull(result);
 		// Either FromString or Parse may be selected depending on reflection path; both produce non-null; ensure it's one of expected shapes
-		Assert.IsTrue(result.Value is "abc" or "abc:parsed");
+		Assert.IsTrue(result.Value is "abc" or "abc:parsed", "Deserialized value should match expected FromString or Parse output");
 	}
 
 	[TestMethod]

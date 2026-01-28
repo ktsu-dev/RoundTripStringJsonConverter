@@ -58,7 +58,7 @@ public class PropertyNameTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(4, deserialized.Count);
+		Assert.HasCount(4, deserialized);
 
 		// Verify all keys and values
 		Assert.IsTrue(deserialized.ContainsKey(CustomKey.FromString("key1")));
@@ -96,19 +96,19 @@ public class PropertyNameTests
 		Assert.IsNotNull(deserialized);
 
 		// Verify KeyValuePairs
-		Assert.AreEqual(2, deserialized.KeyValuePairs.Count);
+		Assert.HasCount(2, deserialized.KeyValuePairs);
 		Assert.AreEqual("simpleValue", deserialized.KeyValuePairs[CustomKey.FromString("simple")]);
 		Assert.AreEqual("complexValue", deserialized.KeyValuePairs[CustomKey.FromString("complex key")]);
 
 		// Verify KeyKeyPairs
-		Assert.AreEqual(2, deserialized.KeyKeyPairs.Count);
+		Assert.HasCount(2, deserialized.KeyKeyPairs);
 		Assert.AreEqual("mapValue1", deserialized.KeyKeyPairs[CustomKey.FromString("mapKey1")].Value);
 		Assert.AreEqual("mapValue2", deserialized.KeyKeyPairs[CustomKey.FromString("mapKey2")].Value);
 
 		// Verify KeyListPairs
-		Assert.AreEqual(2, deserialized.KeyListPairs.Count);
-		Assert.AreEqual(2, deserialized.KeyListPairs[CustomKey.FromString("listKey1")].Count);
-		Assert.AreEqual(1, deserialized.KeyListPairs[CustomKey.FromString("listKey2")].Count);
+		Assert.HasCount(2, deserialized.KeyListPairs);
+		Assert.HasCount(2, deserialized.KeyListPairs[CustomKey.FromString("listKey1")]);
+		Assert.HasCount(1, deserialized.KeyListPairs[CustomKey.FromString("listKey2")]);
 	}
 
 	[TestMethod]
@@ -133,7 +133,7 @@ public class PropertyNameTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(8, deserialized.Count);
+		Assert.HasCount(8, deserialized);
 
 		// Verify all special character keys work
 		foreach (KeyValuePair<CustomKey, string> kvp in original)
@@ -164,7 +164,7 @@ public class PropertyNameTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(5, deserialized.Count);
+		Assert.HasCount(5, deserialized);
 
 		Assert.AreEqual("emptyKey", deserialized[CustomKey.FromString("")]);
 		Assert.AreEqual("singleSpace", deserialized[CustomKey.FromString(" ")]);
@@ -197,7 +197,7 @@ public class PropertyNameTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(1, deserialized.Count);
+		Assert.HasCount(1, deserialized);
 		Assert.AreEqual("first", deserialized[key2]); // Should work with key2 due to equality
 	}
 
@@ -220,7 +220,7 @@ public class PropertyNameTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(5, deserialized.Count);
+		Assert.HasCount(5, deserialized);
 
 		// Verify case sensitivity is maintained
 		Assert.AreEqual("value1", deserialized[CustomKey.FromString("lowercase")]);

@@ -155,7 +155,7 @@ public class SemanticStringTests
 		List<EmailAddress>? deserializedList = JsonSerializer.Deserialize<List<EmailAddress>>(json, options);
 
 		Assert.IsNotNull(deserializedList);
-		Assert.AreEqual(3, deserializedList.Count);
+		Assert.HasCount(3, deserializedList);
 		Assert.AreEqual("first@example.com", deserializedList[0].ToString());
 		Assert.AreEqual("second@example.com", deserializedList[1].ToString());
 		Assert.AreEqual("third@example.com", deserializedList[2].ToString());
@@ -182,7 +182,7 @@ public class SemanticStringTests
 		Dictionary<ProductSku, Product>? deserializedCatalog = JsonSerializer.Deserialize<Dictionary<ProductSku, Product>>(json, options);
 
 		Assert.IsNotNull(deserializedCatalog);
-		Assert.AreEqual(2, deserializedCatalog.Count);
+		Assert.HasCount(2, deserializedCatalog);
 
 		ProductSku sku1 = ProductSku.Create("SKU-001");
 		ProductSku sku2 = ProductSku.Create("SKU-002");
@@ -215,8 +215,8 @@ public class SemanticStringTests
 		ApiConfiguration? deserializedConfig = JsonSerializer.Deserialize<ApiConfiguration>(json, options);
 
 		Assert.IsNotNull(deserializedConfig);
-		Assert.AreEqual(3, deserializedConfig.Keys.Count);
-		Assert.AreEqual(3, deserializedConfig.NotificationEmails.Count);
+		Assert.HasCount(3, deserializedConfig.Keys);
+		Assert.HasCount(3, deserializedConfig.NotificationEmails);
 
 		// Test dictionary keys and values
 		ApiKey testKey = ApiKey.Create("api-key-1");
@@ -295,7 +295,7 @@ public class SemanticStringTests
 		List<ProductSku>? deserializedList = JsonSerializer.Deserialize<List<ProductSku>>(json, options);
 
 		Assert.IsNotNull(deserializedList);
-		Assert.AreEqual(1000, deserializedList.Count);
+		Assert.HasCount(1000, deserializedList);
 		Assert.AreEqual("SKU-000000", deserializedList[0].ToString());
 		Assert.AreEqual("SKU-000999", deserializedList[999].ToString());
 	}
@@ -320,7 +320,7 @@ public class SemanticStringTests
 		Dictionary<string, object>? deserializedValues = JsonSerializer.Deserialize<Dictionary<string, object>>(json, options);
 
 		Assert.IsNotNull(deserializedValues);
-		Assert.AreEqual(6, deserializedValues.Count);
+		Assert.HasCount(6, deserializedValues);
 
 		// Note: Due to JSON serialization limitations, custom types in mixed collections
 		// may be serialized as strings, but the conversion should not fail

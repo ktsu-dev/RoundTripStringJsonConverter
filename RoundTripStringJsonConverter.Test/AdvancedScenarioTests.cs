@@ -47,7 +47,7 @@ public class AdvancedScenarioTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(4, deserialized.Count);
+		Assert.HasCount(4, deserialized);
 
 		// Verify all keys and values
 		Assert.IsTrue(deserialized.ContainsKey(CustomKey.FromString("key1")));
@@ -83,7 +83,7 @@ public class AdvancedScenarioTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(8, deserialized.Count);
+		Assert.HasCount(8, deserialized);
 
 		// Verify all special character keys work
 		foreach (KeyValuePair<CustomKey, string> kvp in original)
@@ -114,7 +114,7 @@ public class AdvancedScenarioTests
 			JsonSerializer.Deserialize<Dictionary<CustomKey, string>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(5, deserialized.Count);
+		Assert.HasCount(5, deserialized);
 
 		// Verify case sensitivity is maintained
 		Assert.AreEqual("value1", deserialized[CustomKey.FromString("lowercase")]);

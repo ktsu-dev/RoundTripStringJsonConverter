@@ -102,11 +102,11 @@ public class IntegrationTests
 		Assert.IsNotNull(deserialized);
 		Assert.AreEqual("ORD-001", deserialized.Id.Id);
 		Assert.AreEqual("USER-123", deserialized.CustomerId.Value);
-		Assert.AreEqual(3, deserialized.Products.Count);
+		Assert.HasCount(3, deserialized.Products);
 		Assert.AreEqual("PROD-A", deserialized.Products[0].Code);
 		Assert.AreEqual("PROD-B", deserialized.Products[1].Code);
 		Assert.AreEqual("PROD-C", deserialized.Products[2].Code);
-		Assert.AreEqual(2, deserialized.CategoryCounts.Count);
+		Assert.HasCount(2, deserialized.CategoryCounts);
 		Assert.AreEqual(original.OrderDate, deserialized.OrderDate);
 	}
 
@@ -132,15 +132,15 @@ public class IntegrationTests
 			JsonSerializer.Deserialize<Dictionary<UserId, List<ProductCode>>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(2, deserialized.Count);
+		Assert.HasCount(2, deserialized);
 
 		UserId user1 = UserId.FromString("USER-001");
 		UserId user2 = UserId.FromString("USER-002");
 
 		Assert.IsTrue(deserialized.ContainsKey(user1));
 		Assert.IsTrue(deserialized.ContainsKey(user2));
-		Assert.AreEqual(2, deserialized[user1].Count);
-		Assert.AreEqual(1, deserialized[user2].Count);
+		Assert.HasCount(2, deserialized[user1]);
+		Assert.HasCount(1, deserialized[user2]);
 	}
 
 	[TestMethod]
@@ -181,8 +181,8 @@ public class IntegrationTests
 		OrderSummary? deserialized = JsonSerializer.Deserialize<OrderSummary>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(2, deserialized.Orders.Count);
-		Assert.AreEqual(2, deserialized.CustomerOrderCounts.Count);
+		Assert.HasCount(2, deserialized.Orders);
+		Assert.HasCount(2, deserialized.CustomerOrderCounts);
 		Assert.IsNotNull(deserialized.MostPopularProduct);
 		Assert.AreEqual("PROD-1", deserialized.MostPopularProduct.Code);
 
@@ -190,7 +190,7 @@ public class IntegrationTests
 		Order firstOrder = deserialized.Orders[0];
 		Assert.AreEqual("ORD-001", firstOrder.Id.Id);
 		Assert.AreEqual("USER-A", firstOrder.CustomerId.Value);
-		Assert.AreEqual(2, firstOrder.Products.Count);
+		Assert.HasCount(2, firstOrder.Products);
 	}
 
 	[TestMethod]
@@ -216,11 +216,11 @@ public class IntegrationTests
 			JsonSerializer.Deserialize<Dictionary<ProductCode, List<UserId>>>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(10, deserialized.Count);
+		Assert.HasCount(10, deserialized);
 
 		ProductCode firstProduct = ProductCode.Parse("PROD-0");
 		Assert.IsTrue(deserialized.ContainsKey(firstProduct));
-		Assert.AreEqual(100, deserialized[firstProduct].Count);
+		Assert.HasCount(100, deserialized[firstProduct]);
 		Assert.AreEqual("USER-0000", deserialized[firstProduct][0].Value);
 	}
 
@@ -242,7 +242,7 @@ public class IntegrationTests
 		object[]? deserialized = JsonSerializer.Deserialize<object[]>(json, options);
 
 		Assert.IsNotNull(deserialized);
-		Assert.AreEqual(6, deserialized.Length);
+		Assert.HasCount(6, deserialized);
 
 		// Note: Due to JSON serialization, custom types will be serialized as strings
 		// and may not deserialize back to the original types in mixed collections
