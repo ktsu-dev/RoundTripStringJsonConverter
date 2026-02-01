@@ -1,5 +1,3 @@
-## v1.0.7 (patch)
+## v1.0.7
 
-Changes since v1.0.6:
-
-- Refactor null check in RoundTripStringJsonConverterFactory to use Ensure.NotNull ([@matt-edmondson](https://github.com/matt-edmondson))
+No significant changes detected since v1.0.7.
