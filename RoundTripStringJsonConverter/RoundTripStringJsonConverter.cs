@@ -299,10 +299,12 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		{
 			Ensure.NotNull(writer, nameof(writer));
 
+#pragma warning disable KTSU0004 // Use Ensure.NotNull instead of manual null check
 			if (value is null)
 			{
 				throw new ArgumentNullException(nameof(value));
 			}
+#pragma warning restore KTSU0004 // Use Ensure.NotNull instead of manual null check
 
 			string? stringValue = value.ToString();
 			writer.WritePropertyName(stringValue ?? string.Empty);
