@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="System.Text.Json" Version="10.0.9" />
-    <PackageVersion Include="ktsu.Semantics.Strings" Version="2.2.0" />
+    <PackageVersion Include="ktsu.Semantics.Strings" Version="2.3.0" />
     <PackageVersion Include="Polyfill" Version="10.11.0" />
   </ItemGroup>
 </Project>
