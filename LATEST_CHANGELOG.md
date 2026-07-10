@@ -1,7 +1,6 @@
-## v1.0.19 (patch)
+## v1.0.20 (patch)
 
-Changes since v1.0.18:
+Changes since v1.0.19:
 
-- Bump MSTest.Sdk from 4.2.3 to 4.3.0 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ktsu.Semantics.Strings from 2.5.4 to 2.5.5 ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
