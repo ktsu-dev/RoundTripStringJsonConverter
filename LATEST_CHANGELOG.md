@@ -1,6 +1,4 @@
-## v1.0.20 (patch)
+## v1.0.20
 
-Changes since v1.0.19:
-
-- Bump ktsu.Semantics.Strings from 2.5.4 to 2.5.5 ([@dependabot[bot]](https://github.com/dependabot[bot]))
+No significant changes detected since v1.0.20.
 
