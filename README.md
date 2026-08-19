@@ -2,11 +2,13 @@
 
 > A versatile JSON converter factory that serializes objects using their ToString method and deserializes using FromString, Parse, Create, or Convert methods.
 
-[![License](https://img.shields.io/github/license/ktsu-dev/RoundTripStringJsonConverter)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/blob/main/LICENSE.md)
-[![NuGet](https://img.shields.io/nuget/v/ktsu.RoundTripStringJsonConverter.svg)](https://www.nuget.org/packages/ktsu.RoundTripStringJsonConverter/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/ktsu.RoundTripStringJsonConverter.svg)](https://www.nuget.org/packages/ktsu.RoundTripStringJsonConverter/)
-[![Build Status](https://github.com/ktsu-dev/RoundTripStringJsonConverter/workflows/build/badge.svg)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/actions)
-[![GitHub Stars](https://img.shields.io/github/stars/ktsu-dev/RoundTripStringJsonConverter?style=social)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/stargazers)
+[![License](https://img.shields.io/github/license/ktsu-dev/RoundTripStringJsonConverter.svg?label=License&logo=nuget)](LICENSE.md)
+[![NuGet Version](https://img.shields.io/nuget/v/ktsu.RoundTripStringJsonConverter?label=Stable&logo=nuget)](https://nuget.org/packages/ktsu.RoundTripStringJsonConverter)
+[![NuGet Version](https://img.shields.io/nuget/vpre/ktsu.RoundTripStringJsonConverter?label=Latest&logo=nuget)](https://nuget.org/packages/ktsu.RoundTripStringJsonConverter)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/ktsu.RoundTripStringJsonConverter?label=Downloads&logo=nuget)](https://nuget.org/packages/ktsu.RoundTripStringJsonConverter)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ktsu-dev/RoundTripStringJsonConverter?label=Commits&logo=github)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/commits/main)
+[![GitHub contributors](https://img.shields.io/github/contributors/ktsu-dev/RoundTripStringJsonConverter?label=Contributors&logo=github)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/graphs/contributors)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ktsu-dev/RoundTripStringJsonConverter/dotnet.yml?label=Build&logo=github)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/actions)
 
 ## Introduction
 
