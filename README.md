@@ -8,7 +8,7 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/ktsu.RoundTripStringJsonConverter?label=Downloads&logo=nuget)](https://nuget.org/packages/ktsu.RoundTripStringJsonConverter)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ktsu-dev/RoundTripStringJsonConverter?label=Commits&logo=github)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/commits/main)
 [![GitHub contributors](https://img.shields.io/github/contributors/ktsu-dev/RoundTripStringJsonConverter?label=Contributors&logo=github)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/graphs/contributors)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ktsu-dev/RoundTripStringJsonConverter/dotnet.yml?label=Build&logo=github)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/actions)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ktsu-dev/RoundTripStringJsonConverter/dotnet.yml?branch=main&label=Build&logo=github)](https://github.com/ktsu-dev/RoundTripStringJsonConverter/actions)
 
 ## Introduction
 
