@@ -1,7 +1,6 @@
-## v1.0.57 (patch)
+## v1.0.58 (patch)
 
-Changes since v1.0.56:
+Changes since v1.0.57:
 
-- Bump System.Text.Json from 10.0.11 to 10.0.12 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump Polyfill from 11.2.0 to 11.3.0 ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
