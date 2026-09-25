@@ -1,6 +1,6 @@
-## v1.0.69 (patch)
+## v1.0.70 (patch)
 
-Changes since v1.0.68:
+Changes since v1.0.69:
 
-- Bump the ktsu group with 10 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
