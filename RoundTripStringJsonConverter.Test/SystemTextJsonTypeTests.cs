@@ -58,7 +58,8 @@ public class SystemTextJsonTypeTests
 
 		NodeHolder? result = JsonSerializer.Deserialize<NodeHolder>("{\"Node\":{\"a\":1}}", options);
 
-		Assert.IsNotNull(result?.Node);
+		Assert.IsNotNull(result);
+		Assert.IsNotNull(result.Node);
 		Assert.AreEqual(1, result.Node["a"]!.GetValue<int>());
 	}
 
@@ -68,7 +69,8 @@ public class SystemTextJsonTypeTests
 		JsonSerializerOptions options = GetOptions();
 
 		DocumentHolder? result = JsonSerializer.Deserialize<DocumentHolder>("{\"Document\":{\"a\":1}}", options);
-		Assert.IsNotNull(result?.Document);
+		Assert.IsNotNull(result);
+		Assert.IsNotNull(result.Document);
 		string json = JsonSerializer.Serialize(result, options);
 		result.Document.Dispose();
 
