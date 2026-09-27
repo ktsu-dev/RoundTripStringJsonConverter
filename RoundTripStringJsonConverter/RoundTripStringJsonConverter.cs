@@ -68,6 +68,14 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			return true;
 		}
 
+		// Leave System.Text.Json's own types (JsonNode, JsonDocument, JsonElement, ...) to its built-in
+		// converters. They have a usable Parse(string), but they serialize as JSON, not as a string.
+		if (type.Namespace is not null &&
+			(type.Namespace == "System.Text.Json" || type.Namespace.StartsWith("System.Text.Json.", StringComparison.Ordinal)))
+		{
+			return true;
+		}
+
 		// Check if it's a generic collection type
 		if (type.IsGenericType)
 		{
