@@ -238,8 +238,10 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 
 		/// <summary>
 		/// Gets a value indicating whether null values should be handled by this converter.
+		/// Only reference types handle null here. For a value type, System.Text.Json rejects a null token
+		/// with a <see cref="JsonException"/>, and a <see cref="Nullable{T}"/> wrapper reads it as null.
 		/// </summary>
-		public override bool HandleNull => true;
+		public override bool HandleNull => !typeof(T).IsValueType;
 
 		/// <summary>
 		/// Reads and converts the JSON to the specified type.
