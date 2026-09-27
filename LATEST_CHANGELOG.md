@@ -1,4 +1,6 @@
-## v1.0.70
+## v1.0.71 (patch)
 
-No significant changes detected since v1.0.70.
+Changes since v1.0.70:
+
+- Invoke conversion methods that take an IFormatProvider or optional parameters [patch] ([@matt-edmondson](https://github.com/matt-edmondson))
 
