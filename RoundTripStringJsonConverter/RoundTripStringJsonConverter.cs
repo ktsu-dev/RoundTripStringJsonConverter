@@ -4,6 +4,7 @@ namespace ktsu.RoundTripStringJsonConverter;
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -104,18 +105,13 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 				MethodInfo[] methods = [.. publicStaticMethods
 					.Where(m => m.Name == methodName)];
 
-				// Find the first method that matches our criteria
-				foreach (MethodInfo method in methods)
+				// Prefer an exact single-string overload. Otherwise take the first overload whose extra
+				// parameters can all be supplied, so GetMethods() ordering can't pick one we can't call.
+				MethodInfo? match = methods.FirstOrDefault(m => m.GetParameters().Length == 1 && IsUsableConversionMethod(m, type))
+					?? methods.FirstOrDefault(m => IsUsableConversionMethod(m, type));
+				if (match is not null)
 				{
-					ParameterInfo[] parameters = method.GetParameters();
-					if (parameters.Length > 0 &&
-						parameters[0].ParameterType == typeof(string) &&
-						(method.ReturnType == type ||
-						 (method.ReturnType.IsGenericType && type.IsGenericType &&
-						  method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition())))
-					{
-						return method;
-					}
+					return match;
 				}
 			}
 			catch (AmbiguousMatchException)
@@ -145,6 +141,46 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			}
 		}
 		return null;
+	}
+
+	/// <summary>
+	/// Determines whether a method can convert a string to the specified type: its first parameter is a
+	/// string, it returns the type, and every further parameter is an <see cref="IFormatProvider"/> or optional.
+	/// </summary>
+	/// <param name="method">The candidate method.</param>
+	/// <param name="type">The type to convert to.</param>
+	/// <returns>True if the method can be invoked by <see cref="BuildArguments"/>; otherwise, false.</returns>
+	private static bool IsUsableConversionMethod(MethodInfo method, Type type)
+	{
+		ParameterInfo[] parameters = method.GetParameters();
+		return parameters.Length > 0 &&
+			parameters[0].ParameterType == typeof(string) &&
+			parameters.Skip(1).All(p => p.ParameterType == typeof(IFormatProvider) || p.IsOptional) &&
+			(method.ReturnType == type ||
+			 (method.ReturnType.IsGenericType && type.IsGenericType &&
+			  method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition()));
+	}
+
+	/// <summary>
+	/// Builds the argument list for a conversion method accepted by <see cref="IsUsableConversionMethod"/>.
+	/// An <see cref="IFormatProvider"/> gets the invariant culture and an optional parameter gets its default.
+	/// </summary>
+	/// <param name="method">The conversion method.</param>
+	/// <param name="value">The string to convert.</param>
+	/// <returns>The arguments to invoke the method with.</returns>
+	private static object?[] BuildArguments(MethodInfo method, string value)
+	{
+		ParameterInfo[] parameters = method.GetParameters();
+		object?[] arguments = new object?[parameters.Length];
+		arguments[0] = value;
+		for (int i = 1; i < parameters.Length; i++)
+		{
+			arguments[i] = parameters[i].ParameterType == typeof(IFormatProvider)
+				? CultureInfo.InvariantCulture
+				: Type.Missing;
+		}
+
+		return arguments;
 	}
 
 	/// <summary>
@@ -231,7 +267,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 
 			try
 			{
-				return (T)StringConversionMethod!.Invoke(null, [stringValue])!;
+				return (T)StringConversionMethod!.Invoke(null, BuildArguments(StringConversionMethod, stringValue))!;
 			}
 			catch (TargetInvocationException ex) when (ex.InnerException is not null)
 			{
@@ -257,7 +293,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 
 			try
 			{
-				return (T)StringConversionMethod!.Invoke(null, [stringValue])!;
+				return (T)StringConversionMethod!.Invoke(null, BuildArguments(StringConversionMethod, stringValue))!;
 			}
 			catch (TargetInvocationException ex) when (ex.InnerException is not null)
 			{
