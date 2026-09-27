@@ -226,6 +226,13 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	{
 		private static readonly MethodInfo? StringConversionMethod = CreateStringConversionMethod();
 
+		/// <summary>
+		/// Whether the conversion method is handed the invariant culture by <see cref="BuildArguments"/>,
+		/// in which case values must be written with the invariant culture too.
+		/// </summary>
+		private static readonly bool ReadsWithInvariantCulture =
+			StringConversionMethod?.GetParameters().Any(p => p.ParameterType == typeof(IFormatProvider)) ?? false;
+
 		private static MethodInfo? CreateStringConversionMethod()
 		{
 			MethodInfo? method = FindStringConversionMethod(typeof(T));
@@ -235,6 +242,17 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			}
 			return method;
 		}
+
+		/// <summary>
+		/// Formats a value in the culture its conversion method reads it back with: the invariant culture
+		/// when the method takes an <see cref="IFormatProvider"/>, otherwise whatever <c>ToString()</c> uses.
+		/// </summary>
+		/// <param name="value">The value to format.</param>
+		/// <returns>The string representation of the value.</returns>
+		private static string? FormatValue(T value) =>
+			ReadsWithInvariantCulture && value is IFormattable formattable
+				? formattable.ToString(null, CultureInfo.InvariantCulture)
+				: value?.ToString();
 
 		/// <summary>
 		/// Gets a value indicating whether null values should be handled by this converter.
@@ -318,7 +336,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 				return;
 			}
 
-			string? stringValue = value.ToString();
+			string? stringValue = FormatValue(value);
 			writer.WriteStringValue(stringValue);
 		}
 
@@ -340,7 +358,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			}
 #pragma warning restore KTSU0004 // Use Ensure.NotNull instead of manual null check
 
-			string? stringValue = value.ToString();
+			string? stringValue = FormatValue(value);
 			writer.WritePropertyName(stringValue ?? string.Empty);
 		}
 #endif
