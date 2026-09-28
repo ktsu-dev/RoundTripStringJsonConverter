@@ -1,6 +1,9 @@
-## v1.0.72
+## v1.0.73-pre.1 (prerelease)
 
-No significant changes detected since v1.0.72.
+Changes since v1.0.72:
+
+- Bump Polyfill from 11.4.0 to 11.4.1 ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
 ## v1.0.72 (patch)
 
@@ -204,8 +207,10 @@ Changes since v1.0.40:
 Changes since v1.0.39:
 
 - Fix build against ktsu.Sdk 2.27.0 ([@matt-edmondson](https://github.com/matt-edmondson))
+- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
 - Sync .editorconfig ([@KtsuTools](https://github.com/KtsuTools))
 - Sync global.json ([@KtsuTools](https://github.com/KtsuTools))
+- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
 
 ## v1.0.39 (patch)
 
@@ -391,10 +396,13 @@ Changes since v1.0.10:
 - chore: remove unused SourceLink package versions ([@matt-edmondson](https://github.com/matt-edmondson))
 - chore: remove SourceLink package references from project ([@matt-edmondson](https://github.com/matt-edmondson))
 - Add TAGS.md with NuGet package tags ([@matt-edmondson](https://github.com/matt-edmondson))
+- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
 
 ## v1.0.11-pre.1 (prerelease)
 
-No significant changes detected since v1.0.11.
+Changes since v1.0.10:
+
+- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
 
 ## v1.0.10 (patch)
 
@@ -408,7 +416,11 @@ Changes since v1.0.9:
 
 ## v1.0.10-pre.1 (prerelease)
 
-No significant changes detected since v1.0.10.
+Changes since v1.0.9:
+
+- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
 
 ## v1.0.9 (patch)
 
@@ -449,7 +461,12 @@ Changes since v1.0.8-pre.1:
 
 ## v1.0.8-pre.1 (prerelease)
 
-No significant changes detected since v1.0.8.
+Changes since v1.0.7:
+
+- Merge remote-tracking branch 'refs/remotes/origin/main' ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
 
 ## v1.0.7 (patch)
 
@@ -490,7 +507,14 @@ Changes since v1.0.5-pre.1:
 
 ## v1.0.5-pre.1 (prerelease)
 
-No significant changes detected since v1.0.5.
+Changes since v1.0.4:
+
+- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .specstory\.gitignore ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .gitattributes ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .runsettings ([@ktsu[bot]](https://github.com/ktsu[bot]))
 
 ## v1.0.4 (patch)
 
@@ -528,7 +552,9 @@ Changes since v1.0.1-pre.1:
 
 ## v1.0.1-pre.1 (prerelease)
 
-No significant changes detected since v1.0.1.
+Changes since v1.0.0:
+
+- Update project dependencies and configuration settings ([@matt-edmondson](https://github.com/matt-edmondson))
 
 ## v1.0.0 (major)
 
