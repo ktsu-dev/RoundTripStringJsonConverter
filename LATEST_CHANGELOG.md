@@ -1,7 +1,6 @@
-## v1.0.73-pre.1 (prerelease)
+## v1.0.73 (patch)
 
 Changes since v1.0.72:
 
-- Bump Polyfill from 11.4.0 to 11.4.1 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Move CI onto the shared ci-shared.yml pipeline ([@Claude](https://github.com/Claude))
 
