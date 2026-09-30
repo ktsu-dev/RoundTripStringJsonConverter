@@ -1,6 +1,8 @@
-## v1.0.73
+## v1.0.74-pre.1 (prerelease)
 
-No significant changes detected since v1.0.73.
+Changes since v1.0.73:
+
+- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
 ## v1.0.73 (patch)
 
