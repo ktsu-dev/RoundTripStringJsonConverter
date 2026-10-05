@@ -110,4 +110,59 @@ public class ConversionMethodPriorityTests
 		Assert.IsTrue(factory.CanConvert(typeof(ClassWithParseAndCreate)));
 		Assert.IsTrue(factory.CanConvert(typeof(ClassWithCreateAndConvert)));
 	}
+
+	/// <summary>
+	/// Generic class whose FromString returns a different closed type, so only Parse can produce it.
+	/// </summary>
+	public sealed class BoxWithMismatchedFromString<TValue>(string raw)
+	{
+		public string Raw { get; } = raw;
+
+		public static BoxWithMismatchedFromString<string> FromString(string value) => new($"FromString:{value}");
+
+		public static BoxWithMismatchedFromString<TValue> Parse(string value) => new($"Parse:{value}");
+
+		public override string ToString() => Raw;
+	}
+
+	public interface ITestEncoding;
+
+	public struct HexEncoding : ITestEncoding;
+
+	/// <summary>
+	/// Class whose FromString is generic with a constraint the class itself cannot satisfy, so only Parse can produce it.
+	/// </summary>
+	public sealed class CodeWithConstrainedGenericFromString(string value)
+	{
+		public string Value { get; } = value;
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "Testing a constrained generic overload")]
+		public static CodeWithConstrainedGenericFromString FromString<TEncoding>(string value) where TEncoding : struct, ITestEncoding => new($"FromString:{value}");
+
+		public static CodeWithConstrainedGenericFromString Parse(string value) => new($"Parse:{value}");
+
+		public override string ToString() => Value;
+	}
+
+	[TestMethod]
+	public void FromString_Returning_A_Different_Closed_Generic_Type_Should_Fall_Back_To_Parse()
+	{
+		JsonSerializerOptions options = GetOptions();
+
+		BoxWithMismatchedFromString<int>? result = JsonSerializer.Deserialize<BoxWithMismatchedFromString<int>>("\"test\"", options);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual("Parse:test", result.Raw, "Parse should be used because FromString returns BoxWithMismatchedFromString<string>");
+	}
+
+	[TestMethod]
+	public void Generic_FromString_That_Cannot_Be_Closed_Over_The_Type_Should_Fall_Back_To_Parse()
+	{
+		JsonSerializerOptions options = GetOptions();
+
+		CodeWithConstrainedGenericFromString? result = JsonSerializer.Deserialize<CodeWithConstrainedGenericFromString>("\"test\"", options);
+
+		Assert.IsNotNull(result);
+		Assert.AreEqual("Parse:test", result.Value, "Parse should be used because FromString<TEncoding> cannot be closed over the type");
+	}
 }

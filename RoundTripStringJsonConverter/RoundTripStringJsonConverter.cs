@@ -103,49 +103,22 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// <returns>The method info if found, null otherwise.</returns>
 	private static MethodInfo? FindStringConversionMethod(Type type)
 	{
+		MethodInfo[] publicStaticMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 		foreach (string methodName in SupportedMethodNames)
 		{
-			try
-			{
-				MethodInfo[] publicStaticMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+			// Close any generic candidates over the type, dropping those that can't be closed or can't be called
+			MethodInfo[] methods = [.. publicStaticMethods
+				.Where(m => m.Name == methodName)
+				.Select(m => CloseOverType(m, type))
+				.OfType<MethodInfo>()
+				.Where(m => IsUsableConversionMethod(m, type))];
 
-				// Get all methods with the specified name and binding flags
-				MethodInfo[] methods = [.. publicStaticMethods
-					.Where(m => m.Name == methodName)];
-
-				// Prefer an exact single-string overload. Otherwise take the first overload whose extra
-				// parameters can all be supplied, so GetMethods() ordering can't pick one we can't call.
-				MethodInfo? match = methods.FirstOrDefault(m => m.GetParameters().Length == 1 && IsUsableConversionMethod(m, type))
-					?? methods.FirstOrDefault(m => IsUsableConversionMethod(m, type));
-				if (match is not null)
-				{
-					return match;
-				}
-			}
-			catch (AmbiguousMatchException)
+			// Prefer an exact single-string overload. Otherwise take the first overload whose extra
+			// parameters can all be supplied, so GetMethods() ordering can't pick one we can't call.
+			MethodInfo? match = methods.FirstOrDefault(m => m.GetParameters().Length == 1) ?? methods.FirstOrDefault();
+			if (match is not null)
 			{
-				// If there's an ambiguous match, try to find the specific overload we want
-				try
-				{
-					MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public, null, [typeof(string)], null);
-					if (method is not null &&
-						(method.ReturnType == type ||
-						 (method.ReturnType.IsGenericType && type.IsGenericType &&
-						  method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition())))
-					{
-						return method;
-					}
-				}
-				catch (ArgumentException)
-				{
-					// Continue to next method name if this one fails
-					continue;
-				}
-				catch (AmbiguousMatchException)
-				{
-					// Continue to next method name if this one fails
-					continue;
-				}
+				return match;
 			}
 		}
 		return null;
@@ -164,9 +137,31 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		return parameters.Length > 0 &&
 			parameters[0].ParameterType == typeof(string) &&
 			parameters.Skip(1).All(p => p.ParameterType == typeof(IFormatProvider) || p.IsOptional) &&
-			(method.ReturnType == type ||
-			 (method.ReturnType.IsGenericType && type.IsGenericType &&
-			  method.ReturnType.GetGenericTypeDefinition() == type.GetGenericTypeDefinition()));
+			method.ReturnType == type;
+	}
+
+	/// <summary>
+	/// Closes a generic method definition over the specified type, so that it can be checked and invoked.
+	/// </summary>
+	/// <param name="method">The candidate method.</param>
+	/// <param name="type">The type to convert to.</param>
+	/// <returns>The method itself if it is not generic, the closed method, or null if it cannot be closed over the type.</returns>
+	private static MethodInfo? CloseOverType(MethodInfo method, Type type)
+	{
+		if (!method.IsGenericMethodDefinition)
+		{
+			return method;
+		}
+
+		try
+		{
+			return method.MakeGenericMethod(type);
+		}
+		catch (ArgumentException)
+		{
+			// The method has more than one type parameter, or the type violates a constraint
+			return null;
+		}
 	}
 
 	/// <summary>
@@ -232,7 +227,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated via reflection in CreateConverter using Activator.CreateInstance")]
 	private sealed class RoundTripStringJsonConverter<T> : JsonConverter<T>
 	{
-		private static readonly MethodInfo? StringConversionMethod = CreateStringConversionMethod();
+		private static readonly MethodInfo? StringConversionMethod = FindStringConversionMethod(typeof(T));
 
 		/// <summary>
 		/// Whether the conversion method is handed the invariant culture by <see cref="BuildArguments"/>,
@@ -240,16 +235,6 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// </summary>
 		private static readonly bool ReadsWithInvariantCulture =
 			StringConversionMethod?.GetParameters().Any(p => p.ParameterType == typeof(IFormatProvider)) ?? false;
-
-		private static MethodInfo? CreateStringConversionMethod()
-		{
-			MethodInfo? method = FindStringConversionMethod(typeof(T));
-			if (method is not null && method.ContainsGenericParameters)
-			{
-				method = method.MakeGenericMethod(typeof(T));
-			}
-			return method;
-		}
 
 		/// <summary>
 		/// Formats a value in the culture its conversion method reads it back with: the invariant culture
