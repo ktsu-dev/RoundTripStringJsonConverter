@@ -2,6 +2,7 @@
 
 namespace ktsu.RoundTripStringJsonConverter.Tests;
 
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,6 +37,25 @@ public class EdgeCaseTests
 		}
 
 		public override string ToString() => Value;
+	}
+
+	public class TypeWithExceptionInNestedParseHelper(string value)
+	{
+		public string Value { get; } = value;
+
+		public static TypeWithExceptionInNestedParseHelper Parse(string value) => new(ValidateNestedParseValue(value));
+
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private static string ValidateNestedParseValue(string value)
+		{
+			return value == "throw" ? throw new FormatException("Test exception in nested helper") : value;
+		}
+
+		public override string ToString() => Value;
+
+		public override bool Equals(object? obj) => obj is TypeWithExceptionInNestedParseHelper other && Value == other.Value;
+
+		public override int GetHashCode() => Value.GetHashCode();
 	}
 
 	public class TypeWithExceptionInToString(string value)
@@ -193,6 +213,34 @@ public class EdgeCaseTests
 
 		Assert.ThrowsExactly<ArgumentException>(() =>
 			JsonSerializer.Deserialize<TypeWithExceptionInFromString>(json, options));
+	}
+
+	[TestMethod]
+	public void Should_Keep_Conversion_Method_Stack_Trace_When_Propagating_Exception()
+	{
+		JsonSerializerOptions options = GetOptions();
+		string json = "\"throw\"";
+
+		FormatException exception = Assert.ThrowsExactly<FormatException>(() =>
+			JsonSerializer.Deserialize<TypeWithExceptionInNestedParseHelper>(json, options));
+
+		Assert.IsNotNull(exception.StackTrace);
+		Assert.Contains(nameof(TypeWithExceptionInNestedParseHelper.Parse), exception.StackTrace);
+		Assert.Contains("ValidateNestedParseValue", exception.StackTrace);
+	}
+
+	[TestMethod]
+	public void Should_Keep_Conversion_Method_Stack_Trace_When_Propagating_Exception_From_Property_Name()
+	{
+		JsonSerializerOptions options = GetOptions();
+		string json = "{\"throw\":\"value\"}";
+
+		FormatException exception = Assert.ThrowsExactly<FormatException>(() =>
+			JsonSerializer.Deserialize<Dictionary<TypeWithExceptionInNestedParseHelper, string>>(json, options));
+
+		Assert.IsNotNull(exception.StackTrace);
+		Assert.Contains(nameof(TypeWithExceptionInNestedParseHelper.Parse), exception.StackTrace);
+		Assert.Contains("ValidateNestedParseValue", exception.StackTrace);
 	}
 
 	[TestMethod]

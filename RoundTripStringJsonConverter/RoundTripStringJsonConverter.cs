@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -293,15 +294,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			string? stringValue = reader.GetString();
 			Ensure.NotNull(stringValue, nameof(stringValue));
 
-			try
-			{
-				return (T)StringConversionMethod!.Invoke(null, BuildArguments(StringConversionMethod, stringValue))!;
-			}
-			catch (TargetInvocationException ex) when (ex.InnerException is not null)
-			{
-				// Unwrap the inner exception to preserve the original exception type
-				throw ex.InnerException;
-			}
+			return InvokeStringConversionMethod(stringValue);
 		}
 
 #if NET6_0_OR_GREATER
@@ -319,17 +312,28 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			string? stringValue = reader.GetString();
 			Ensure.NotNull(stringValue, nameof(stringValue));
 
+			return InvokeStringConversionMethod(stringValue);
+		}
+#endif
+
+		/// <summary>
+		/// Invokes the type's string conversion method on the specified value.
+		/// </summary>
+		/// <param name="stringValue">The string to convert.</param>
+		/// <returns>The converted value.</returns>
+		private static T InvokeStringConversionMethod(string stringValue)
+		{
 			try
 			{
 				return (T)StringConversionMethod!.Invoke(null, BuildArguments(StringConversionMethod, stringValue))!;
 			}
 			catch (TargetInvocationException ex) when (ex.InnerException is not null)
 			{
-				// Unwrap the inner exception to preserve the original exception type
-				throw ex.InnerException;
+				// Unwrap the inner exception, keeping both its type and the stack trace from the conversion method
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				throw;
 			}
 		}
-#endif
 
 		/// <summary>
 		/// Writes the specified value as JSON.
