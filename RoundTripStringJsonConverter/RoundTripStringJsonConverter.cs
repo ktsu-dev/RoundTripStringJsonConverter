@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -321,6 +320,11 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// </summary>
 		/// <param name="stringValue">The string to convert.</param>
 		/// <returns>The converted value.</returns>
+#if NET
+		// Let the conversion method's exception propagate as it was thrown, keeping its type and stack trace
+		private static T InvokeStringConversionMethod(string stringValue) =>
+			(T)StringConversionMethod!.Invoke(null, BindingFlags.DoNotWrapExceptions, binder: null, BuildArguments(StringConversionMethod, stringValue), culture: null)!;
+#else
 		private static T InvokeStringConversionMethod(string stringValue)
 		{
 			try
@@ -330,10 +334,11 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			catch (TargetInvocationException ex) when (ex.InnerException is not null)
 			{
 				// Unwrap the inner exception, keeping both its type and the stack trace from the conversion method
-				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
 				throw;
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Writes the specified value as JSON.
