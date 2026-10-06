@@ -293,15 +293,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			string? stringValue = reader.GetString();
 			Ensure.NotNull(stringValue, nameof(stringValue));
 
-			try
-			{
-				return (T)StringConversionMethod!.Invoke(null, BuildArguments(StringConversionMethod, stringValue))!;
-			}
-			catch (TargetInvocationException ex) when (ex.InnerException is not null)
-			{
-				// Unwrap the inner exception to preserve the original exception type
-				throw ex.InnerException;
-			}
+			return InvokeStringConversionMethod(stringValue);
 		}
 
 #if NET6_0_OR_GREATER
@@ -319,14 +311,31 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			string? stringValue = reader.GetString();
 			Ensure.NotNull(stringValue, nameof(stringValue));
 
+			return InvokeStringConversionMethod(stringValue);
+		}
+#endif
+
+		/// <summary>
+		/// Invokes the type's string conversion method on the specified value.
+		/// </summary>
+		/// <param name="stringValue">The string to convert.</param>
+		/// <returns>The converted value.</returns>
+#if NET
+		// Let the conversion method's exception propagate as it was thrown, keeping its type and stack trace
+		private static T InvokeStringConversionMethod(string stringValue) =>
+			(T)StringConversionMethod!.Invoke(null, BindingFlags.DoNotWrapExceptions, binder: null, BuildArguments(StringConversionMethod, stringValue), culture: null)!;
+#else
+		private static T InvokeStringConversionMethod(string stringValue)
+		{
 			try
 			{
 				return (T)StringConversionMethod!.Invoke(null, BuildArguments(StringConversionMethod, stringValue))!;
 			}
 			catch (TargetInvocationException ex) when (ex.InnerException is not null)
 			{
-				// Unwrap the inner exception to preserve the original exception type
-				throw ex.InnerException;
+				// Unwrap the inner exception, keeping both its type and the stack trace from the conversion method
+				System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				throw;
 			}
 		}
 #endif
