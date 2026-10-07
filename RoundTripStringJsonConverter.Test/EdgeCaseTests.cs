@@ -282,7 +282,7 @@ public class EdgeCaseTests
 		JsonSerializerOptions options = GetOptions();
 		string json = "\"abc\"";
 
-		// With ambiguity present, factory's catch(AmbiguousMatchException) path should still resolve a valid method
+		// With overloads present, the factory should still resolve a valid method
 		TypeWithAmbiguousFromString? result = JsonSerializer.Deserialize<TypeWithAmbiguousFromString>(json, options);
 		Assert.IsNotNull(result);
 		// Either FromString or Parse may be selected depending on reflection path; both produce non-null; ensure it's one of expected shapes
