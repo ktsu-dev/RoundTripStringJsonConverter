@@ -1,6 +1,6 @@
-## v1.0.75 (patch)
+## v1.0.76-pre.1 (prerelease)
 
-Changes since v1.0.74:
+Changes since v1.0.75:
 
-- [patch] Skip conversion methods that cannot produce the type, so a working Parse is used ([@Claude](https://github.com/Claude))
+- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
