@@ -1,6 +1,6 @@
-## v1.0.76-pre.3 (prerelease)
+## v1.0.76 (patch)
 
-Changes since v1.0.76-pre.2:
+Changes since v1.0.75:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Leave enums to System.Text.Json instead of converting them through Enum.Parse [patch] ([@Claude](https://github.com/Claude))
 
