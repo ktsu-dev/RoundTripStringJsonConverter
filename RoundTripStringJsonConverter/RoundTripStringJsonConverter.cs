@@ -62,6 +62,13 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			return true;
 		}
 
+		// Leave enums to System.Text.Json, which writes them as numbers or through JsonStringEnumConverter.
+		// Their only candidate is System.Enum's Parse<TEnum>(string), which would change the wire format.
+		if (type.IsEnum)
+		{
+			return true;
+		}
+
 		// Check if it's a system type
 		if (type.Namespace == "System" && type.Assembly == typeof(string).Assembly)
 		{
@@ -108,7 +115,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		{
 			// Close any generic candidates over the type, dropping those that can't be closed or can't be called
 			MethodInfo[] methods = [.. publicStaticMethods
-				.Where(m => m.Name == methodName)
+				.Where(m => m.Name == methodName && !IsDeclaredOnRuntimeBase(m))
 				.Select(m => CloseOverType(m, type))
 				.OfType<MethodInfo>()
 				.Where(m => IsUsableConversionMethod(m, type))];
@@ -123,6 +130,18 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		}
 		return null;
 	}
+
+	/// <summary>
+	/// Determines whether a method is inherited from <see cref="Enum"/>, <see cref="ValueType"/> or <see cref="object"/>
+	/// rather than declared by the type or a user base class. Closing System.Enum's generic Parse over a type
+	/// would otherwise make it look like that type's own conversion method.
+	/// </summary>
+	/// <param name="method">The candidate method.</param>
+	/// <returns>True if the method is declared on one of the runtime base types; otherwise, false.</returns>
+	private static bool IsDeclaredOnRuntimeBase(MethodInfo method) =>
+		method.DeclaringType == typeof(Enum) ||
+		method.DeclaringType == typeof(ValueType) ||
+		method.DeclaringType == typeof(object);
 
 	/// <summary>
 	/// Determines whether a method can convert a string to the specified type: its first parameter is a
