@@ -1,6 +1,7 @@
-## v1.0.76 (patch)
+## v1.0.77-pre.1 (prerelease)
 
-Changes since v1.0.75:
+Changes since v1.0.76:
 
-- Leave enums to System.Text.Json instead of converting them through Enum.Parse [patch] ([@Claude](https://github.com/Claude))
+- Bump Polyfill from 11.4.3 to 11.4.5 ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
