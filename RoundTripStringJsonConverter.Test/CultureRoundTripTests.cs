@@ -36,6 +36,22 @@ public class CultureRoundTripTests
 		public string ToString(string? format, IFormatProvider? formatProvider) => Amount.ToString(format, formatProvider);
 	}
 
+	/// <summary>
+	/// Parses with a format provider but is not <see cref="IFormattable"/>, so the only way to write it
+	/// is its culture-sensitive ToString().
+	/// </summary>
+	public readonly record struct Temperature(double Celsius)
+	{
+		public static Temperature Parse(string s, IFormatProvider? provider) => new(double.Parse(s, provider));
+
+		public override string ToString() => Celsius.ToString(CultureInfo.CurrentCulture);
+	}
+
+	public class TemperatureHolder
+	{
+		public Temperature T { get; set; }
+	}
+
 	public class ComplexHolder
 	{
 		public Complex C { get; set; }
@@ -109,6 +125,43 @@ public class CultureRoundTripTests
 		Assert.AreEqual("{\"2.25\":1}", json);
 		Assert.IsNotNull(result);
 		Assert.IsTrue(result.ContainsKey(new Money(2.25m)));
+	}
+
+	[TestMethod]
+	public void NonFormattableFormatProviderParseTypeShouldRoundTripUnderACommaDecimalCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+
+		string json = JsonSerializer.Serialize(new TemperatureHolder { T = new Temperature(1.5) }, options);
+		TemperatureHolder? result = JsonSerializer.Deserialize<TemperatureHolder>(json, options);
+
+		Assert.AreEqual("{\"T\":\"1.5\"}", json);
+		Assert.AreEqual(new Temperature(1.5), result?.T);
+	}
+
+	[TestMethod]
+	public void NonFormattableFormatProviderParseTypeShouldRoundTripAsADictionaryKeyUnderACommaDecimalCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+		Dictionary<Temperature, int> original = new() { [new Temperature(2.5)] = 1 };
+
+		string json = JsonSerializer.Serialize(original, options);
+		Dictionary<Temperature, int>? result = JsonSerializer.Deserialize<Dictionary<Temperature, int>>(json, options);
+
+		Assert.AreEqual("{\"2.5\":1}", json);
+		Assert.IsNotNull(result);
+		Assert.IsTrue(result.ContainsKey(new Temperature(2.5)));
+	}
+
+	[TestMethod]
+	public void NonFormattableWriteShouldRestoreTheCurrentCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+		CultureInfo before = CultureInfo.CurrentCulture;
+
+		_ = JsonSerializer.Serialize(new Temperature(1.5), options);
+
+		Assert.AreSame(before, CultureInfo.CurrentCulture);
 	}
 
 	[TestMethod]
