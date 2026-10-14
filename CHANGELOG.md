@@ -2,220 +2,220 @@
 
 Changes since v1.0.76:
 
-- Write non-IFormattable values with the invariant culture too [patch] ([@matt-edmondson](https://github.com/matt-edmondson))
+- Write non-IFormattable values with the invariant culture too [patch] (matt-edmondson)
 
 ## v1.0.76 (patch)
 
 Changes since v1.0.75:
 
-- Leave enums to System.Text.Json instead of converting them through Enum.Parse [patch] ([@Claude](https://github.com/Claude))
+- Leave enums to System.Text.Json instead of converting them through Enum.Parse [patch] (Claude)
 
 ## v1.0.76-pre.3 (prerelease)
 
 Changes since v1.0.76-pre.2:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.76-pre.2 (prerelease)
 
 Changes since v1.0.76-pre.1:
 
-- Bump MSTest.Sdk from 4.4.1 to 4.5.1 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump MSTest.Sdk from 4.4.1 to 4.5.1 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.76-pre.1 (prerelease)
 
 Changes since v1.0.75:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.75 (patch)
 
 Changes since v1.0.74:
 
-- [patch] Skip conversion methods that cannot produce the type, so a working Parse is used ([@Claude](https://github.com/Claude))
+- [patch] Skip conversion methods that cannot produce the type, so a working Parse is used (Claude)
 
 ## v1.0.74 (patch)
 
 Changes since v1.0.73:
 
-- [patch] Invoke with DoNotWrapExceptions on .NET 5+ instead of catching and rethrowing ([@Claude](https://github.com/Claude))
-- [patch] Keep the conversion method's stack trace when rethrowing its exception ([@Claude](https://github.com/Claude))
+- [patch] Invoke with DoNotWrapExceptions on .NET 5+ instead of catching and rethrowing (Claude)
+- [patch] Keep the conversion method's stack trace when rethrowing its exception (Claude)
 
 ## v1.0.74-pre.3 (prerelease)
 
 Changes since v1.0.74-pre.2:
 
-- Bump Polyfill from 11.4.1 to 11.4.3 ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump Polyfill from 11.4.1 to 11.4.3 (dependabot[bot])
 
 ## v1.0.74-pre.2 (prerelease)
 
 Changes since v1.0.74-pre.1:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.74-pre.1 (prerelease)
 
 Changes since v1.0.73:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.73 (patch)
 
 Changes since v1.0.72:
 
-- Move CI onto the shared ci-shared.yml pipeline ([@Claude](https://github.com/Claude))
+- Move CI onto the shared ci-shared.yml pipeline (Claude)
 
 ## v1.0.73-pre.1 (prerelease)
 
 Changes since v1.0.72:
 
-- Bump Polyfill from 11.4.0 to 11.4.1 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump Polyfill from 11.4.0 to 11.4.1 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.72 (patch)
 
 Changes since v1.0.71:
 
-- Assert result and its property separately in SystemTextJsonTypeTests ([@Claude](https://github.com/Claude))
-- Write values in the invariant culture when they are parsed with it [patch] ([@Claude](https://github.com/Claude))
-- Leave System.Text.Json's own types to its built-in converters [patch] ([@Claude](https://github.com/Claude))
-- Throw on a JSON null for a non-nullable struct [patch] ([@Claude](https://github.com/Claude))
+- Assert result and its property separately in SystemTextJsonTypeTests (Claude)
+- Write values in the invariant culture when they are parsed with it [patch] (Claude)
+- Leave System.Text.Json's own types to its built-in converters [patch] (Claude)
+- Throw on a JSON null for a non-nullable struct [patch] (Claude)
 
 ## v1.0.71 (patch)
 
 Changes since v1.0.70:
 
-- Invoke conversion methods that take an IFormatProvider or optional parameters [patch] ([@matt-edmondson](https://github.com/matt-edmondson))
+- Invoke conversion methods that take an IFormatProvider or optional parameters [patch] (matt-edmondson)
 
 ## v1.0.70 (patch)
 
 Changes since v1.0.69:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.69 (patch)
 
 Changes since v1.0.68:
 
-- Bump the ktsu group with 10 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 10 updates (dependabot[bot])
 
 ## v1.0.68 (patch)
 
 Changes since v1.0.67:
 
-- Bump the ktsu group with 9 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 9 updates (dependabot[bot])
 
 ## v1.0.67 (patch)
 
 Changes since v1.0.66:
 
-- Bump the ktsu group with 10 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 10 updates (dependabot[bot])
 
 ## v1.0.66 (patch)
 
 Changes since v1.0.65:
 
-- Bump Polyfill from 11.3.0 to 11.4.0 ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump Polyfill from 11.3.0 to 11.4.0 (dependabot[bot])
 
 ## v1.0.65 (patch)
 
 Changes since v1.0.64:
 
-- Bump the ktsu group with 10 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 10 updates (dependabot[bot])
 
 ## v1.0.64 (patch)
 
 Changes since v1.0.63:
 
-- Bump MSTest.Sdk from 4.4.0 to 4.4.1 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump MSTest.Sdk from 4.4.0 to 4.4.1 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.63 (patch)
 
 Changes since v1.0.62:
 
-- Bump the ktsu group with 10 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 10 updates (dependabot[bot])
 
 ## v1.0.62 (patch)
 
 Changes since v1.0.61:
 
-- Gate Dependabot auto-merge on CI actually being green ([@Claude](https://github.com/Claude))
+- Gate Dependabot auto-merge on CI actually being green (Claude)
 
 ## v1.0.61 (patch)
 
 Changes since v1.0.60:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.60 (patch)
 
 Changes since v1.0.59:
 
-- Bump the ktsu group with 10 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 10 updates (dependabot[bot])
 
 ## v1.0.59 (patch)
 
 Changes since v1.0.58:
 
-- ci: adopt the consolidated .NET workflow [patch] ([@Claude](https://github.com/Claude))
+- ci: adopt the consolidated .NET workflow [patch] (Claude)
 
 ## v1.0.58 (patch)
 
 Changes since v1.0.57:
 
-- Bump Polyfill from 11.2.0 to 11.3.0 ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump Polyfill from 11.2.0 to 11.3.0 (dependabot[bot])
 
 ## v1.0.57 (patch)
 
 Changes since v1.0.56:
 
-- Bump System.Text.Json from 10.0.11 to 10.0.12 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump System.Text.Json from 10.0.11 to 10.0.12 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.56 (patch)
 
 Changes since v1.0.55:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.55 (patch)
 
 Changes since v1.0.54:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.54 (patch)
 
 Changes since v1.0.53:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.53 (patch)
 
 Changes since v1.0.52:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.52 (patch)
 
 Changes since v1.0.51:
 
-- Bump MSTest.Sdk from 4.3.3 to 4.4.0 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump MSTest.Sdk from 4.3.3 to 4.4.0 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.51 (patch)
 
 Changes since v1.0.50:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.50 (patch)
 
 Changes since v1.0.49:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.49 (patch)
 
@@ -225,20 +225,20 @@ No significant changes detected since v1.0.48.
 
 Changes since v1.0.47:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.47 (patch)
 
 Changes since v1.0.46:
 
-- ci: make the SonarQube quality gate opt in [patch] ([@matt-edmondson](https://github.com/matt-edmondson))
-- ci: adopt the unified dotnet workflow [patch] ([@matt-edmondson](https://github.com/matt-edmondson))
+- ci: make the SonarQube quality gate opt in [patch] (matt-edmondson)
+- ci: adopt the unified dotnet workflow [patch] (matt-edmondson)
 
 ## v1.0.46 (patch)
 
 Changes since v1.0.45:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.45 (patch)
 
@@ -248,415 +248,415 @@ No significant changes detected since v1.0.44.
 
 Changes since v1.0.43:
 
-- Bump the ktsu group with 9 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 9 updates (dependabot[bot])
 
 ## v1.0.43 (patch)
 
 Changes since v1.0.42:
 
-- Bump the ktsu group with 10 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 10 updates (dependabot[bot])
 
 ## v1.0.42 (patch)
 
 Changes since v1.0.41:
 
-- chore: store icon.png in LFS as .gitattributes declares ([@matt-edmondson](https://github.com/matt-edmondson))
-- docs: scope build badge to the default branch ([@matt-edmondson](https://github.com/matt-edmondson))
-- docs: correct README, DESCRIPTION and TAGS metadata ([@matt-edmondson](https://github.com/matt-edmondson))
+- chore: store icon.png in LFS as .gitattributes declares (matt-edmondson)
+- docs: scope build badge to the default branch (matt-edmondson)
+- docs: correct README, DESCRIPTION and TAGS metadata (matt-edmondson)
 
 ## v1.0.41 (patch)
 
 Changes since v1.0.40:
 
-- Stop Update SDKs failing when there is nothing to update ([@matt-edmondson](https://github.com/matt-edmondson))
+- Stop Update SDKs failing when there is nothing to update (matt-edmondson)
 
 ## v1.0.40 (patch)
 
 Changes since v1.0.39:
 
-- Fix build against ktsu.Sdk 2.27.0 ([@matt-edmondson](https://github.com/matt-edmondson))
-- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
-- Sync .editorconfig ([@KtsuTools](https://github.com/KtsuTools))
-- Sync global.json ([@KtsuTools](https://github.com/KtsuTools))
-- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
+- Fix build against ktsu.Sdk 2.27.0 (matt-edmondson)
+- Sync .github\workflows\dotnet.yml (KtsuTools)
+- Sync .editorconfig (KtsuTools)
+- Sync global.json (KtsuTools)
+- Sync .github\workflows\dotnet.yml (KtsuTools)
 
 ## v1.0.39 (patch)
 
 Changes since v1.0.38:
 
-- chore: update ktsu.Sdk to 2.21.1 [patch] ([@matt-edmondson](https://github.com/matt-edmondson))
+- chore: update ktsu.Sdk to 2.21.1 [patch] (matt-edmondson)
 
 ## v1.0.38 (patch)
 
 Changes since v1.0.37:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.37 (patch)
 
 Changes since v1.0.36:
 
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync global.json (ktsu[bot])
 
 ## v1.0.36 (patch)
 
 Changes since v1.0.35:
 
-- Sync .github\workflows\update-sdks.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dependabot-merge.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .gitattributes ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\update-sdks.yml (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync .github\workflows\dependabot-merge.yml (ktsu[bot])
+- Sync .gitattributes (ktsu[bot])
 
 ## v1.0.35 (patch)
 
 Changes since v1.0.34:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.34 (patch)
 
 Changes since v1.0.33:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.33 (patch)
 
 Changes since v1.0.32:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.32 (patch)
 
 Changes since v1.0.31:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.31 (patch)
 
 Changes since v1.0.30:
 
-- Bump MSTest.Sdk from 4.3.2 to 4.3.3 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump MSTest.Sdk from 4.3.2 to 4.3.3 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.30 (patch)
 
 Changes since v1.0.29:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.29 (patch)
 
 Changes since v1.0.28:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.28 (patch)
 
 Changes since v1.0.27:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.27 (patch)
 
 Changes since v1.0.26:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.26 (patch)
 
 Changes since v1.0.25:
 
-- Bump the ktsu group with 9 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 9 updates (dependabot[bot])
 
 ## v1.0.25 (patch)
 
 Changes since v1.0.24:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.24 (patch)
 
 Changes since v1.0.23:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.23 (patch)
 
 Changes since v1.0.22:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.22 (patch)
 
 Changes since v1.0.21:
 
-- Bump Polyfill from 10.11.2 to 11.0.1 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the system group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump Polyfill from 10.11.2 to 11.0.1 (dependabot[bot])
+- Bump the system group with 1 update (dependabot[bot])
 
 ## v1.0.21 (patch)
 
 Changes since v1.0.20:
 
-- Bump MSTest.Sdk from 4.3.0 to 4.3.2 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump MSTest.Sdk from 4.3.0 to 4.3.2 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.20 (patch)
 
 Changes since v1.0.19:
 
-- Bump ktsu.Semantics.Strings from 2.5.4 to 2.5.5 ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ktsu.Semantics.Strings from 2.5.4 to 2.5.5 (dependabot[bot])
 
 ## v1.0.19 (patch)
 
 Changes since v1.0.18:
 
-- Bump MSTest.Sdk from 4.2.3 to 4.3.0 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump MSTest.Sdk from 4.2.3 to 4.3.0 (dependabot[bot])
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.18 (patch)
 
 Changes since v1.0.17:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.17 (patch)
 
 Changes since v1.0.16:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.16 (patch)
 
 Changes since v1.0.15:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.15 (patch)
 
 Changes since v1.0.14:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.14 (patch)
 
 Changes since v1.0.13:
 
-- Bump Polyfill from 10.11.0 to 10.11.2 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 9 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump Polyfill from 10.11.0 to 10.11.2 (dependabot[bot])
+- Bump the ktsu group with 9 updates (dependabot[bot])
 
 ## v1.0.13 (patch)
 
 Changes since v1.0.12:
 
-- Bump the ktsu group with 9 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 9 updates (dependabot[bot])
 
 ## v1.0.12 (patch)
 
 Changes since v1.0.11:
 
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump the ktsu group with 1 update (dependabot[bot])
 
 ## v1.0.11 (patch)
 
 Changes since v1.0.10:
 
-- chore: remove unused SourceLink package versions ([@matt-edmondson](https://github.com/matt-edmondson))
-- chore: remove SourceLink package references from project ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add TAGS.md with NuGet package tags ([@matt-edmondson](https://github.com/matt-edmondson))
-- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
+- chore: remove unused SourceLink package versions (matt-edmondson)
+- chore: remove SourceLink package references from project (matt-edmondson)
+- Add TAGS.md with NuGet package tags (matt-edmondson)
+- Sync .github\workflows\dotnet.yml (KtsuTools)
 
 ## v1.0.11-pre.1 (prerelease)
 
 Changes since v1.0.10:
 
-- Sync .github\workflows\dotnet.yml ([@KtsuTools](https://github.com/KtsuTools))
+- Sync .github\workflows\dotnet.yml (KtsuTools)
 
 ## v1.0.10 (patch)
 
 Changes since v1.0.9:
 
-- Merge remote-tracking branch 'refs/remotes/origin/main' ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Merge remote-tracking branch 'refs/remotes/origin/main' (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
 
 ## v1.0.10-pre.1 (prerelease)
 
 Changes since v1.0.9:
 
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
 
 ## v1.0.9 (patch)
 
 Changes since v1.0.8:
 
-- Remove legacy build scripts ([@matt-edmondson](https://github.com/matt-edmondson))
+- Remove legacy build scripts (matt-edmondson)
 
 ## v1.0.8 (patch)
 
 Changes since v1.0.7:
 
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Merge remote-tracking branch 'refs/remotes/origin/main' ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Merge remote-tracking branch 'refs/remotes/origin/main' ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync global.json (ktsu[bot])
+- Merge remote-tracking branch 'refs/remotes/origin/main' (ktsu[bot])
+- Sync scripts\update-winget-manifests.ps1 (ktsu[bot])
+- Sync scripts\update-winget-manifests.ps1 (ktsu[bot])
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync global.json (ktsu[bot])
+- Merge remote-tracking branch 'refs/remotes/origin/main' (ktsu[bot])
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync global.json (ktsu[bot])
 
 ## v1.0.8-pre.3 (prerelease)
 
 Changes since v1.0.8-pre.2:
 
-- Merge remote-tracking branch 'refs/remotes/origin/main' ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Merge remote-tracking branch 'refs/remotes/origin/main' (ktsu[bot])
+- Sync scripts\update-winget-manifests.ps1 (ktsu[bot])
 
 ## v1.0.8-pre.2 (prerelease)
 
 Changes since v1.0.8-pre.1:
 
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync scripts\update-winget-manifests.ps1 (ktsu[bot])
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync global.json (ktsu[bot])
 
 ## v1.0.8-pre.1 (prerelease)
 
 Changes since v1.0.7:
 
-- Merge remote-tracking branch 'refs/remotes/origin/main' ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Merge remote-tracking branch 'refs/remotes/origin/main' (ktsu[bot])
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync global.json (ktsu[bot])
 
 ## v1.0.7 (patch)
 
 Changes since v1.0.6:
 
-- Refactor null check in RoundTripStringJsonConverterFactory to use Ensure.NotNull ([@matt-edmondson](https://github.com/matt-edmondson))
+- Refactor null check in RoundTripStringJsonConverterFactory to use Ensure.NotNull (matt-edmondson)
 
 ## v1.0.6 (patch)
 
 Changes since v1.0.5:
 
-- Remove .github\workflows\project.yml ([@matt-edmondson](https://github.com/matt-edmondson))
+- Remove .github\workflows\project.yml (matt-edmondson)
 
 ## v1.0.5 (patch)
 
 Changes since v1.0.4:
 
-- migrate to dotnet 10 ([@matt-edmondson](https://github.com/matt-edmondson))
+- migrate to dotnet 10 (matt-edmondson)
 
 ## v1.0.5-pre.4 (prerelease)
 
 Changes since v1.0.5-pre.3:
 
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync scripts\update-winget-manifests.ps1 (ktsu[bot])
 
 ## v1.0.5-pre.3 (prerelease)
 
 Changes since v1.0.5-pre.2:
 
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
 
 ## v1.0.5-pre.2 (prerelease)
 
 Changes since v1.0.5-pre.1:
 
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
 
 ## v1.0.5-pre.1 (prerelease)
 
 Changes since v1.0.4:
 
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .specstory\.gitignore ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .gitattributes ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .runsettings ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Sync scripts\PSBuild.psm1 (ktsu[bot])
+- Sync scripts\update-winget-manifests.ps1 (ktsu[bot])
+- Sync .github\workflows\dotnet.yml (ktsu[bot])
+- Sync .specstory\.gitignore (ktsu[bot])
+- Sync .gitattributes (ktsu[bot])
+- Sync .runsettings (ktsu[bot])
 
 ## v1.0.4 (patch)
 
 Changes since v1.0.3:
 
-- Fix an issue where classes that have a factory method on a base class would not be converted ([@matt-edmondson](https://github.com/matt-edmondson))
+- Fix an issue where classes that have a factory method on a base class would not be converted (matt-edmondson)
 
 ## v1.0.3 (patch)
 
 Changes since v1.0.2:
 
-- Add CompatibilitySuppressions.xml for diagnostic suppression in RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update SDKs and enhance project configuration ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update project metadata and package versions ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add CompatibilitySuppressions.xml for diagnostic suppression in RoundTripStringJsonConverter (matt-edmondson)
+- Update SDKs and enhance project configuration (matt-edmondson)
+- Update project metadata and package versions (matt-edmondson)
 
 ## v1.0.2 (patch)
 
 Changes since v1.0.1:
 
-- Update copyright notice and enhance winget manifest script ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update copyright notice and enhance winget manifest script (matt-edmondson)
 
 ## v1.0.1 (patch)
 
 Changes since v1.0.0:
 
-- [patch] Force a patch ([@matt-edmondson](https://github.com/matt-edmondson))
-- Enhance CI/CD workflow and improve code coverage ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update project dependencies and configuration settings ([@matt-edmondson](https://github.com/matt-edmondson))
+- [patch] Force a patch (matt-edmondson)
+- Enhance CI/CD workflow and improve code coverage (matt-edmondson)
+- Update project dependencies and configuration settings (matt-edmondson)
 
 ## v1.0.1-pre.2 (prerelease)
 
 Changes since v1.0.1-pre.1:
 
-- Enhance CI/CD workflow and improve code coverage ([@matt-edmondson](https://github.com/matt-edmondson))
+- Enhance CI/CD workflow and improve code coverage (matt-edmondson)
 
 ## v1.0.1-pre.1 (prerelease)
 
 Changes since v1.0.0:
 
-- Update project dependencies and configuration settings ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update project dependencies and configuration settings (matt-edmondson)
 
 ## v1.0.0 (major)
 
-- Refactor test files to improve code organization and consistency ([@matt-edmondson](https://github.com/matt-edmondson))
-- Enhance RoundTripStringJsonConverter and fix collection handling in tests ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add new SpecStory history file for untitled entry on 2025-06-13 ([@matt-edmondson](https://github.com/matt-edmondson))
-- Fix compilation errors and warnings in test suite for RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update documentation and changelog for RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
-- Refactor test classes to utilize primary constructor syntax for string types ([@matt-edmondson](https://github.com/matt-edmondson))
-- Refactor and enhance testing suite for RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
-- Enhance RoundTripStringJsonConverter to support multiple string conversion methods ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add SpecStory configuration files and rename library to RoundTripStringJsonConverter ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update ktsu.Extensions package reference to version 1.5.5 ([@matt-edmondson](https://github.com/matt-edmondson))
-- Remove Directory.Build.props and Directory.Build.targets files; add copyright headers to ToStringJsonConverter and test files. ([@matt-edmondson](https://github.com/matt-edmondson))
-- Refactor DESCRIPTION and update project SDK references to ktsu.Sdk.Lib and ktsu.Sdk.Test ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update README with comprehensive documentation and usage examples ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update packages ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add LICENSE template ([@matt-edmondson](https://github.com/matt-edmondson))
-- Apply new editorconfig ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add mailmap ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add scripts for automated metadata generation and versioning ([@matt-edmondson](https://github.com/matt-edmondson))
-- Renamed metadata files ([@matt-edmondson](https://github.com/matt-edmondson))
-- Replace LICENSE file with LICENSE.md and update copyright information ([@matt-edmondson](https://github.com/matt-edmondson))
-- Refactor test method names to camel case ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update LICENSE file to LICENSE.md with copyright notice ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add null check in TestRoundTrip to prevent null exception ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update ktsu.Extensions package reference to version 1.0.31 ([@matt-edmondson](https://github.com/matt-edmondson))
-- Rename package to ktsu.ToStringJsonConverter and update ktsu.Extensions to version 1.0.30 ([@matt-edmondson](https://github.com/matt-edmondson))
-- Migrate ktsu.io to ktsu namespace ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update VERSION ([@matt-edmondson](https://github.com/matt-edmondson))
-- Migrate ktsu.io to ktsu namespace ([@matt-edmondson](https://github.com/matt-edmondson))
-- 1.0.0 ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add documentation comments ([@matt-edmondson](https://github.com/matt-edmondson))
-- Suppress specific warnings in csproj ([@matt-edmondson](https://github.com/matt-edmondson))
-- Update Extensions package, and project version ([@matt-edmondson](https://github.com/matt-edmondson))
-- Add project files. ([@matt-edmondson](https://github.com/matt-edmondson))
+- Refactor test files to improve code organization and consistency (matt-edmondson)
+- Enhance RoundTripStringJsonConverter and fix collection handling in tests (matt-edmondson)
+- Add new SpecStory history file for untitled entry on 2025-06-13 (matt-edmondson)
+- Fix compilation errors and warnings in test suite for RoundTripStringJsonConverter (matt-edmondson)
+- Update documentation and changelog for RoundTripStringJsonConverter (matt-edmondson)
+- Refactor test classes to utilize primary constructor syntax for string types (matt-edmondson)
+- Refactor and enhance testing suite for RoundTripStringJsonConverter (matt-edmondson)
+- Enhance RoundTripStringJsonConverter to support multiple string conversion methods (matt-edmondson)
+- Add SpecStory configuration files and rename library to RoundTripStringJsonConverter (matt-edmondson)
+- Update ktsu.Extensions package reference to version 1.5.5 (matt-edmondson)
+- Remove Directory.Build.props and Directory.Build.targets files; add copyright headers to ToStringJsonConverter and test files. (matt-edmondson)
+- Refactor DESCRIPTION and update project SDK references to ktsu.Sdk.Lib and ktsu.Sdk.Test (matt-edmondson)
+- Update README with comprehensive documentation and usage examples (matt-edmondson)
+- Update packages (matt-edmondson)
+- Add LICENSE template (matt-edmondson)
+- Apply new editorconfig (matt-edmondson)
+- Add mailmap (matt-edmondson)
+- Add scripts for automated metadata generation and versioning (matt-edmondson)
+- Renamed metadata files (matt-edmondson)
+- Replace LICENSE file with LICENSE.md and update copyright information (matt-edmondson)
+- Refactor test method names to camel case (matt-edmondson)
+- Update LICENSE file to LICENSE.md with copyright notice (matt-edmondson)
+- Add null check in TestRoundTrip to prevent null exception (matt-edmondson)
+- Update ktsu.Extensions package reference to version 1.0.31 (matt-edmondson)
+- Rename package to ktsu.ToStringJsonConverter and update ktsu.Extensions to version 1.0.30 (matt-edmondson)
+- Migrate ktsu.io to ktsu namespace (matt-edmondson)
+- Update VERSION (matt-edmondson)
+- Migrate ktsu.io to ktsu namespace (matt-edmondson)
+- 1.0.0 (matt-edmondson)
+- Add documentation comments (matt-edmondson)
+- Suppress specific warnings in csproj (matt-edmondson)
+- Update Extensions package, and project version (matt-edmondson)
+- Add project files. (matt-edmondson)
 
