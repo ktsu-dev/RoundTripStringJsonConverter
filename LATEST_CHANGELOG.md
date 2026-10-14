@@ -1,7 +1,6 @@
-## v1.0.77-pre.1 (prerelease)
+## v1.0.77 (patch)
 
 Changes since v1.0.76:
 
-- Bump Polyfill from 11.4.3 to 11.4.5 ([@dependabot[bot]](https://github.com/dependabot[bot]))
-- Bump the ktsu group with 1 update ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Write non-IFormattable values with the invariant culture too [patch] ([@matt-edmondson](https://github.com/matt-edmondson))
 
