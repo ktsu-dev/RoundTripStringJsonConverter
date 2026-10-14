@@ -258,13 +258,34 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// <summary>
 		/// Formats a value in the culture its conversion method reads it back with: the invariant culture
 		/// when the method takes an <see cref="IFormatProvider"/>, otherwise whatever <c>ToString()</c> uses.
+		/// A value that is not <see cref="IFormattable"/> has no way to be handed a culture, so its
+		/// <c>ToString()</c> runs with the current culture set to the invariant culture instead.
 		/// </summary>
 		/// <param name="value">The value to format.</param>
 		/// <returns>The string representation of the value.</returns>
-		private static string? FormatValue(T value) =>
-			ReadsWithInvariantCulture && value is IFormattable formattable
-				? formattable.ToString(null, CultureInfo.InvariantCulture)
-				: value?.ToString();
+		private static string? FormatValue(T value)
+		{
+			if (!ReadsWithInvariantCulture || value is null)
+			{
+				return value?.ToString();
+			}
+
+			if (value is IFormattable formattable)
+			{
+				return formattable.ToString(null, CultureInfo.InvariantCulture);
+			}
+
+			CultureInfo originalCulture = CultureInfo.CurrentCulture;
+			try
+			{
+				CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+				return value.ToString();
+			}
+			finally
+			{
+				CultureInfo.CurrentCulture = originalCulture;
+			}
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether null values should be handled by this converter.
