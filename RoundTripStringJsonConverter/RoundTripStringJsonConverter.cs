@@ -321,7 +321,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			return InvokeStringConversionMethod(stringValue);
 		}
 
-#if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
 		/// <summary>
 		/// Reads and converts the JSON to the specified type as a property name.
 		/// </summary>
@@ -384,7 +384,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			writer.WriteStringValue(stringValue);
 		}
 
-#if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
 		/// <summary>
 		/// Writes the specified value as a JSON property name.
 		/// </summary>

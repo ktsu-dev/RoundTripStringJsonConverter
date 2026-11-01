@@ -28,7 +28,7 @@ For a type to work with this converter, it must have:
 
 ### Multi-Targeting
 
-The library targets `netstandard2.0`, `netstandard2.1`, and .NET 5-10. Uses `#if NET6_0_OR_GREATER` for `ReadAsPropertyName`/`WriteAsPropertyName` methods which enable dictionary key support in newer frameworks.
+The library targets `netstandard2.0`, `netstandard2.1`, and .NET 5-10. Uses `#if NET6_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER` for the `ReadAsPropertyName`/`WriteAsPropertyName` overrides that enable dictionary key support. The netstandard targets get them from the System.Text.Json package they reference; only a `net5.0` target, whose inbox System.Text.Json predates the API, would go without. `NetStandardAssetTests` loads the netstandard2.0 build in its own `AssemblyLoadContext` to cover it, since the test project itself only targets the latest .NET.
 
 ### Project Structure
 
