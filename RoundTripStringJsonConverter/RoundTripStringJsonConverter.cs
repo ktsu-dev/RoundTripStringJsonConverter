@@ -220,8 +220,29 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			return false;
 		}
 
+		// Writing uses ToString, so a type that never overrides it would be written as its type name
+		if (!OverridesToString(typeToConvert))
+		{
+			return false;
+		}
+
 		// Check if we can find a string conversion method for this type
 		return FindStringConversionMethod(typeToConvert) is not null;
+	}
+
+	/// <summary>
+	/// Determines whether a type overrides <see cref="object.ToString"/>, itself or through a base class
+	/// below <see cref="object"/> and <see cref="ValueType"/>. Without an override, <c>ToString()</c>
+	/// returns the type's name and the value's data would be lost on write.
+	/// </summary>
+	/// <param name="type">The type to check.</param>
+	/// <returns>True if <c>ToString()</c> is overridden; otherwise, false.</returns>
+	private static bool OverridesToString(Type type)
+	{
+		MethodInfo? toString = type.GetMethod(nameof(ToString), BindingFlags.Public | BindingFlags.Instance, binder: null, Type.EmptyTypes, modifiers: null);
+		return toString is not null
+			&& toString.DeclaringType != typeof(object)
+			&& toString.DeclaringType != typeof(ValueType);
 	}
 
 	/// <summary>

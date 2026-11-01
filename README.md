@@ -275,6 +275,8 @@ For a type to work with RoundTripStringJsonConverter, it must meet these require
 3. The method must return an instance of the declaring type
 4. Override `ToString()` to provide a string representation that can be reversed by the conversion method
 
+A type that has a conversion method but doesn't override `ToString()`, itself or through a base class, is left to System.Text.Json's default object serialization. Writing it through `ToString()` would only record its type name.
+
 #### Valid Method Signatures
 
 ```csharp
