@@ -90,7 +90,8 @@ public class ToStringOverrideTests
 		WidgetHolder? back = JsonSerializer.Deserialize<WidgetHolder>(json, Options);
 
 		Assert.AreEqual("{\"W\":{\"Name\":\"gear\",\"Size\":3}}", json);
-		Assert.IsNotNull(back?.W);
+		Assert.IsNotNull(back);
+		Assert.IsNotNull(back.W);
 		Assert.AreEqual("gear", back.W.Name);
 		Assert.AreEqual(3, back.W.Size);
 	}
