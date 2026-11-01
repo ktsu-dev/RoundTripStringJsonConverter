@@ -275,6 +275,8 @@ For a type to work with RoundTripStringJsonConverter, it must meet these require
 3. The method must return an instance of the declaring type
 4. Override `ToString()` to provide a string representation that can be reversed by the conversion method
 
+A type that names its own converter with a type-level `[JsonConverter(typeof(...))]` attribute is left to that converter, even when the factory is registered in `JsonSerializerOptions.Converters` and the type has a supported conversion method. Registering the factory never changes the wire format of such a type.
+
 #### Valid Method Signatures
 
 ```csharp
