@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -245,6 +246,12 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// below <see cref="object"/> and <see cref="ValueType"/>. Without an override, <c>ToString()</c>
 	/// returns the type's name and the value's data would be lost on write.
 	/// </summary>
+	/// <remarks>
+	/// The <c>ToString()</c> the compiler synthesizes for a <c>record</c> or <c>record struct</c> does not
+	/// count: it prints the debug form <c>TypeName { Prop = value }</c>, which no conversion method reads
+	/// back. A record that declares its own <c>ToString()</c>, or inherits a sealed one, still counts,
+	/// because the compiler then synthesizes nothing.
+	/// </remarks>
 	/// <param name="type">The type to check.</param>
 	/// <returns>True if <c>ToString()</c> is overridden; otherwise, false.</returns>
 	private static bool OverridesToString(Type type)
@@ -252,7 +259,8 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		MethodInfo? toString = type.GetMethod(nameof(ToString), BindingFlags.Public | BindingFlags.Instance, binder: null, Type.EmptyTypes, modifiers: null);
 		return toString is not null
 			&& toString.DeclaringType != typeof(object)
-			&& toString.DeclaringType != typeof(ValueType);
+			&& toString.DeclaringType != typeof(ValueType)
+			&& !toString.IsDefined(typeof(CompilerGeneratedAttribute), inherit: false);
 	}
 
 	/// <summary>
