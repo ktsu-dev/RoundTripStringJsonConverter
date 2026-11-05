@@ -319,6 +319,20 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		}
 
 		/// <summary>
+		/// Formats a non-null value for writing, refusing a <c>ToString()</c> that returns null.
+		/// Written as a JSON <c>null</c>, such a value can't be read back: a value type rejects the token and a
+		/// reference type reads it as a null reference. Written as a property name, it would become <c>""</c>,
+		/// which reads back through the conversion method as a different value. Failing here surfaces the
+		/// problem when the document is saved rather than when it is next loaded.
+		/// </summary>
+		/// <param name="value">The value to format.</param>
+		/// <returns>The string representation of the value.</returns>
+		/// <exception cref="JsonException">Thrown when the value's <c>ToString()</c> returns null.</exception>
+		private static string FormatNonNullValue(T value) =>
+			FormatValue(value)
+			?? throw new JsonException($"Cannot write a {typeof(T)} because its ToString() returned null, which {nameof(RoundTripStringJsonConverterFactory)} can't read back.");
+
+		/// <summary>
 		/// Gets a value indicating whether null values should be handled by this converter.
 		/// Only reference types handle null here. For a value type, System.Text.Json rejects a null token
 		/// with a <see cref="JsonException"/>, and a <see cref="Nullable{T}"/> wrapper reads it as null.
@@ -411,8 +425,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 				return;
 			}
 
-			string? stringValue = FormatValue(value);
-			writer.WriteStringValue(stringValue);
+			writer.WriteStringValue(FormatNonNullValue(value));
 		}
 
 #if NET6_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
@@ -433,8 +446,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			}
 #pragma warning restore KTSU0004 // Use Ensure.NotNull instead of manual null check
 
-			string? stringValue = FormatValue(value);
-			writer.WritePropertyName(stringValue ?? string.Empty);
+			writer.WritePropertyName(FormatNonNullValue(value));
 		}
 #endif
 	}
