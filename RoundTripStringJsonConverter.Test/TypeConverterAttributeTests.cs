@@ -67,6 +67,16 @@ public class TypeConverterAttributeTests
 		public override string ToString() => Value;
 	}
 
+	[JsonConverter(typeof(RoundTripStringJsonConverterFactory))]
+	public sealed class Tag(string value)
+	{
+		public string Value { get; } = value;
+
+		public static Tag Parse(string s) => new(s);
+
+		public override string ToString() => Value;
+	}
+
 	public class Order
 	{
 		public Money Total { get; set; }
@@ -110,5 +120,56 @@ public class TypeConverterAttributeTests
 		RoundTripStringJsonConverterFactory factory = new();
 
 		Assert.IsTrue(factory.CanConvert(typeof(Unattributed)));
+	}
+
+	[TestMethod]
+	public void CanConvertShouldAcceptTypeWhoseAttributeNamesTheFactory()
+	{
+		RoundTripStringJsonConverterFactory factory = new();
+
+		Assert.IsTrue(factory.CanConvert(typeof(Tag)));
+	}
+
+	[TestMethod]
+	public void TypeWhoseAttributeNamesTheFactoryShouldRoundTripWithDefaultOptions()
+	{
+		JsonSerializerOptions options = new();
+
+		string json = JsonSerializer.Serialize(Tag.Parse("x"), options);
+		Tag? tag = JsonSerializer.Deserialize<Tag>(json, options);
+
+		Assert.AreEqual("\"x\"", json);
+		Assert.IsNotNull(tag);
+		Assert.AreEqual("x", tag.Value);
+	}
+
+	[TestMethod]
+	public void TypeWhoseAttributeNamesTheFactoryShouldRoundTripWithTheFactoryRegistered()
+	{
+		JsonSerializerOptions options = GetOptions();
+
+		string json = JsonSerializer.Serialize(Tag.Parse("x"), options);
+		Tag? tag = JsonSerializer.Deserialize<Tag>(json, options);
+
+		Assert.AreEqual("\"x\"", json);
+		Assert.IsNotNull(tag);
+		Assert.AreEqual("x", tag.Value);
+	}
+
+	[TestMethod]
+	public void TypeWhoseAttributeNamesTheFactoryShouldRoundTripAsADictionaryKey()
+	{
+		JsonSerializerOptions options = new();
+		Dictionary<Tag, int> dictionary = new() { [Tag.Parse("x")] = 1 };
+
+		string json = JsonSerializer.Serialize(dictionary, options);
+		Dictionary<Tag, int>? result = JsonSerializer.Deserialize<Dictionary<Tag, int>>(json, options);
+
+		Assert.AreEqual("{\"x\":1}", json);
+		Assert.IsNotNull(result);
+		Assert.HasCount(1, result);
+		KeyValuePair<Tag, int> entry = result.Single();
+		Assert.AreEqual("x", entry.Key.Value);
+		Assert.AreEqual(1, entry.Value);
 	}
 }
