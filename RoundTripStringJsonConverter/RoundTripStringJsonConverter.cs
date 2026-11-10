@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 /// <summary>
 /// A factory for creating JSON converters that use a type's ToString and string conversion methods for serialization.
@@ -306,11 +307,37 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 				return formattable.ToString(null, CultureInfo.InvariantCulture);
 			}
 
+			// Assigning the original culture back would pin it: a thread that never set a culture reads
+			// DefaultThreadCurrentCulture live, and an explicit assignment stays in the caller's execution
+			// context, so later default changes would stop reaching it and everything it starts. Running in
+			// a copy of the context discards the switch instead. The restore still runs for .NET Framework,
+			// where the culture is thread-static rather than part of the context, and when flow is suppressed.
+			ExecutionContext? context = ExecutionContext.Capture();
+			if (context is null)
+			{
+				return ToStringInInvariantCulture(value);
+			}
+
+			using (context)
+			{
+				string? result = null;
+				ExecutionContext.Run(context, _ => result = ToStringInInvariantCulture(value), null);
+				return result;
+			}
+		}
+
+		/// <summary>
+		/// Runs a value's <c>ToString()</c> with the current culture set to the invariant culture.
+		/// </summary>
+		/// <param name="value">The value to format.</param>
+		/// <returns>The value's string representation.</returns>
+		private static string? ToStringInInvariantCulture(T value)
+		{
 			CultureInfo originalCulture = CultureInfo.CurrentCulture;
 			try
 			{
 				CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-				return value.ToString();
+				return value?.ToString();
 			}
 			finally
 			{
