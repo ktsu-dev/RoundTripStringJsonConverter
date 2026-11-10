@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 /// <summary>
@@ -162,6 +164,76 @@ public class CultureRoundTripTests
 		_ = JsonSerializer.Serialize(new Temperature(1.5), options);
 
 		Assert.AreSame(before, CultureInfo.CurrentCulture);
+	}
+
+	[TestMethod]
+	[DoNotParallelize]
+	public void NonFormattableWriteShouldNotPinTheCurrentCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+		CultureInfo? originalDefault = CultureInfo.DefaultThreadCurrentCulture;
+		// Globalization-invariant builds can't load named cultures, so the default is a distinct clone
+		CultureInfo laterDefault = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+		laterDefault.NumberFormat.NumberDecimalSeparator = ",";
+		string? json = null;
+		CultureInfo? afterOnThisThread = null;
+		CultureInfo? afterOnANewThread = null;
+		CultureInfo? afterInATask = null;
+
+		void SerializeThenChangeTheDefault()
+		{
+			json = JsonSerializer.Serialize(new Temperature(1.5), options);
+			CultureInfo.DefaultThreadCurrentCulture = laterDefault;
+			afterOnThisThread = CultureInfo.CurrentCulture;
+
+			Thread child = new(() => afterOnANewThread = CultureInfo.CurrentCulture);
+			child.Start();
+			child.Join();
+
+			afterInATask = Task.Run(() => CultureInfo.CurrentCulture).GetAwaiter().GetResult();
+		}
+
+		try
+		{
+			// A thread with no inherited context has never set a culture, so it reads the default live
+			Thread thread;
+			using (ExecutionContext.SuppressFlow())
+			{
+				thread = new(SerializeThenChangeTheDefault);
+				thread.Start();
+			}
+
+			thread.Join();
+		}
+		finally
+		{
+			CultureInfo.DefaultThreadCurrentCulture = originalDefault;
+		}
+
+		Assert.AreEqual("\"1.5\"", json);
+		Assert.AreSame(laterDefault, afterOnThisThread, "The calling thread kept the culture the write pinned");
+		Assert.AreSame(laterDefault, afterOnANewThread, "A thread started after the write inherited the pinned culture");
+		Assert.AreSame(laterDefault, afterInATask, "A task started after the write inherited the pinned culture");
+	}
+
+	[TestMethod]
+	public void NonFormattableWriteShouldKeepAnExplicitlySetCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+		CultureInfo original = CultureInfo.CurrentCulture;
+		CultureInfo explicitCulture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+		CultureInfo.CurrentCulture = explicitCulture;
+		try
+		{
+			string json = JsonSerializer.Serialize(new Temperature(1.5), options);
+
+			Assert.AreEqual("\"1.5\"", json);
+			Assert.AreSame(explicitCulture, CultureInfo.CurrentCulture);
+		}
+		finally
+		{
+			CultureInfo.CurrentCulture = original;
+		}
 	}
 
 	[TestMethod]
