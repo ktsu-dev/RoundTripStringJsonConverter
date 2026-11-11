@@ -198,12 +198,35 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		arguments[0] = value;
 		for (int i = 1; i < parameters.Length; i++)
 		{
-			arguments[i] = parameters[i].ParameterType == typeof(IFormatProvider)
+			ParameterInfo parameter = parameters[i];
+			arguments[i] = parameter.ParameterType == typeof(IFormatProvider)
 				? CultureInfo.InvariantCulture
-				: Type.Missing;
+				: GetOptionalArgument(parameter);
 		}
 
 		return arguments;
+	}
+
+	/// <summary>
+	/// Gets the argument for an optional parameter, as the C# compiler would pass it when the caller omits it.
+	/// </summary>
+	/// <param name="parameter">The optional parameter.</param>
+	/// <returns>
+	/// <see cref="Type.Missing"/> when the parameter declares a default, so reflection substitutes that default;
+	/// otherwise the default of the parameter's type. Reflection only substitutes a declared default, so passing
+	/// <see cref="Type.Missing"/> for an <c>[Optional]</c> parameter with none fails the call.
+	/// </returns>
+	private static object? GetOptionalArgument(ParameterInfo parameter)
+	{
+		if (parameter.HasDefaultValue)
+		{
+			return Type.Missing;
+		}
+
+		Type type = parameter.ParameterType;
+		return type.IsValueType && Nullable.GetUnderlyingType(type) is null
+			? Activator.CreateInstance(type)
+			: null;
 	}
 
 	/// <summary>
