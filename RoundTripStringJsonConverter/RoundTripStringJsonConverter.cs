@@ -244,12 +244,17 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			return false;
 		}
 
-		// Leave a type that names its own converter with [JsonConverter] to that converter. Converters in
+		// Leave a type that names another converter with [JsonConverter] to that converter. Converters in
 		// JsonSerializerOptions.Converters outrank a type-level attribute, so without this check registering
-		// the factory would silently change the wire format of such a type. System.Text.Json reads the
-		// attribute with inherit: false, and so do we.
+		// the factory would silently change the wire format of such a type. An attribute that names this
+		// factory is the type opting in, so keep converting it: System.Text.Json instantiates the factory
+		// from the attribute and throws if CanConvert then declines. System.Text.Json reads the attribute
+		// with inherit: false, and so do we.
 		Type declaredType = Nullable.GetUnderlyingType(typeToConvert) ?? typeToConvert;
-		if (declaredType.IsDefined(typeof(JsonConverterAttribute), inherit: false))
+		JsonConverterAttribute? converterAttribute = declaredType.GetCustomAttribute<JsonConverterAttribute>(inherit: false);
+		if (converterAttribute is not null
+			&& (converterAttribute.ConverterType is null
+				|| !typeof(RoundTripStringJsonConverterFactory).IsAssignableFrom(converterAttribute.ConverterType)))
 		{
 			return false;
 		}
