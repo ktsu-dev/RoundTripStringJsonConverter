@@ -49,6 +49,42 @@ public class ToStringOverrideTests
 		public static InheritsToString FromString(string value) => new(value);
 	}
 
+	public sealed record Email(string Value)
+	{
+		public static Email Create(string value) => new(value);
+	}
+
+	public readonly record struct Pt(int X, int Y)
+	{
+		public static Pt Parse(string value)
+		{
+			string[] parts = (value ?? throw new System.ArgumentNullException(nameof(value))).Split(',');
+			return new(int.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture), int.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture));
+		}
+	}
+
+	public sealed record Sku(string Value)
+	{
+		public static Sku Parse(string value) => new(value);
+
+		public override string ToString() => Value;
+	}
+
+	public abstract record SealedStringRecord(string Value)
+	{
+		public sealed override string ToString() => Value;
+	}
+
+	public sealed record Tag(string Value) : SealedStringRecord(Value)
+	{
+		public static Tag FromString(string value) => new(value);
+	}
+
+	public sealed class EmailHolder
+	{
+		public Email? To { get; set; }
+	}
+
 	public sealed class WidgetHolder
 	{
 		public FactoryWidget? W { get; set; }
@@ -114,5 +150,62 @@ public class ToStringOverrideTests
 
 		Assert.AreEqual("\"abc\"", json);
 		Assert.AreEqual("abc", back?.Value);
+	}
+
+	[TestMethod]
+	public void CanConvert_RecordWithFactoryButOnlyCompilerGeneratedToString_ReturnsFalse()
+	{
+		RoundTripStringJsonConverterFactory factory = new();
+		Assert.IsFalse(factory.CanConvert(typeof(Email)));
+	}
+
+	[TestMethod]
+	public void CanConvert_RecordStructWithParseButOnlyCompilerGeneratedToString_ReturnsFalse()
+	{
+		RoundTripStringJsonConverterFactory factory = new();
+		Assert.IsFalse(factory.CanConvert(typeof(Pt)));
+	}
+
+	[TestMethod]
+	public void CanConvert_RecordDeclaringItsOwnToString_ReturnsTrue()
+	{
+		RoundTripStringJsonConverterFactory factory = new();
+		Assert.IsTrue(factory.CanConvert(typeof(Sku)));
+	}
+
+	[TestMethod]
+	public void CanConvert_RecordInheritingSealedToString_ReturnsTrue()
+	{
+		RoundTripStringJsonConverterFactory factory = new();
+		Assert.IsTrue(factory.CanConvert(typeof(Tag)));
+	}
+
+	[TestMethod]
+	public void RoundTrip_RecordWithOnlyCompilerGeneratedToString_KeepsItsData()
+	{
+		string json = JsonSerializer.Serialize(new EmailHolder { To = Email.Create("a@b.c") }, Options);
+		EmailHolder? back = JsonSerializer.Deserialize<EmailHolder>(json, Options);
+
+		Assert.AreEqual("{\"To\":{\"Value\":\"a@b.c\"}}", json);
+		Assert.AreEqual(Email.Create("a@b.c"), back?.To);
+	}
+
+	[TestMethod]
+	public void RoundTrip_RecordStructWithOnlyCompilerGeneratedToString_KeepsItsData()
+	{
+		string json = JsonSerializer.Serialize(new Pt(1, 2), Options);
+		Pt back = JsonSerializer.Deserialize<Pt>(json, Options);
+
+		Assert.AreEqual("{\"X\":1,\"Y\":2}", json);
+		Assert.AreEqual(new Pt(1, 2), back);
+	}
+
+	[TestMethod]
+	public void RoundTrip_RecordDeclaringItsOwnToString_IsWrittenAsString()
+	{
+		string json = JsonSerializer.Serialize(Sku.Parse("X-1"), Options);
+
+		Assert.AreEqual("\"X-1\"", json);
+		Assert.AreEqual(Sku.Parse("X-1"), JsonSerializer.Deserialize<Sku>(json, Options));
 	}
 }
