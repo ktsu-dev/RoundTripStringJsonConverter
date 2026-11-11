@@ -49,6 +49,26 @@ public class CultureRoundTripTests
 		public override string ToString() => Celsius.ToString(CultureInfo.CurrentCulture);
 	}
 
+	/// <summary>
+	/// Has both a current-culture <c>Parse(string)</c> and an invariant-capable <c>Parse(string, IFormatProvider)</c>,
+	/// like <see cref="BigInteger"/>, so it should be written and read with the invariant culture.
+	/// </summary>
+	public sealed record DualAmount(decimal Amount) : IFormattable
+	{
+		public static DualAmount Parse(string s) => new(decimal.Parse(s, CultureInfo.CurrentCulture));
+
+		public static DualAmount Parse(string s, IFormatProvider? provider) => new(decimal.Parse(s, provider));
+
+		public override string ToString() => Amount.ToString(CultureInfo.CurrentCulture);
+
+		public string ToString(string? format, IFormatProvider? formatProvider) => Amount.ToString(format, formatProvider);
+	}
+
+	public class BigIntegerHolder
+	{
+		public BigInteger B { get; set; }
+	}
+
 	public class TemperatureHolder
 	{
 		public Temperature T { get; set; }
@@ -246,5 +266,67 @@ public class CultureRoundTripTests
 
 		Assert.AreEqual("\"1,5\"", json);
 		Assert.AreEqual(new LocalAmount(1.5m), result);
+	}
+
+	/// <summary>
+	/// A culture whose negative sign is U+2212 MINUS SIGN, as sv-SE, fi-FI and nb-NO use.
+	/// </summary>
+	private static CultureInfo MinusSignCulture()
+	{
+		CultureInfo culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+		culture.NumberFormat.NegativeSign = "\u2212";
+		return culture;
+	}
+
+	[TestMethod]
+	public void TypeWithBothParseOverloadsShouldBeWrittenWithTheInvariantCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+
+		string json = JsonSerializer.Serialize(new DualAmount(1.5m), options);
+		DualAmount? result = JsonSerializer.Deserialize<DualAmount>(json, options);
+
+		Assert.AreEqual("\"1.5\"", json);
+		Assert.AreEqual(new DualAmount(1.5m), result);
+	}
+
+	[TestMethod]
+	public void TypeWithBothParseOverloadsShouldRoundTripAsADictionaryKeyWithTheInvariantCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+		Dictionary<DualAmount, int> original = new() { [new DualAmount(2.25m)] = 1 };
+
+		string json = JsonSerializer.Serialize(original, options);
+		Dictionary<DualAmount, int>? result = JsonSerializer.Deserialize<Dictionary<DualAmount, int>>(json, options);
+
+		Assert.AreEqual("{\"2.25\":1}", json);
+		Assert.IsNotNull(result);
+		Assert.IsTrue(result.ContainsKey(new DualAmount(2.25m)));
+	}
+
+	[TestMethod]
+	public void BigIntegerWrittenUnderAMinusSignCultureShouldReadUnderAnotherCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+
+		CultureInfo.CurrentCulture = MinusSignCulture();
+		string json = JsonSerializer.Serialize(new BigIntegerHolder { B = new BigInteger(-5) }, options);
+
+		CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+		BigIntegerHolder? result = JsonSerializer.Deserialize<BigIntegerHolder>(json, options);
+
+		Assert.AreEqual("{\"B\":\"-5\"}", json);
+		Assert.AreEqual(new BigInteger(-5), result?.B);
+	}
+
+	[TestMethod]
+	public void BigIntegerSavedInTheCurrentCultureBeforeTheFixShouldStillLoadInThatCulture()
+	{
+		JsonSerializerOptions options = GetOptions();
+		CultureInfo.CurrentCulture = MinusSignCulture();
+
+		BigIntegerHolder? result = JsonSerializer.Deserialize<BigIntegerHolder>("{\"B\":\"\u2212" + "5\"}", options);
+
+		Assert.AreEqual(new BigInteger(-5), result?.B);
 	}
 }

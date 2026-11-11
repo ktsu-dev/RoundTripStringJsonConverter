@@ -287,7 +287,12 @@ public static MyType FromString(string value) { ... }
 public static MyType Parse(string value) { ... }
 public static MyType Create(string value) { ... }
 public static MyType Convert(string value) { ... }
+
+// So are overloads whose extra parameters are an IFormatProvider or optional:
+public static MyType Parse(string value, IFormatProvider? provider) { ... } // Given CultureInfo.InvariantCulture
 ```
+
+A method that takes an `IFormatProvider` is given `CultureInfo.InvariantCulture`, and an `IFormattable` value is then written with the invariant culture too, so JSON saved under one culture can be read under another. When an `IFormattable` type has both `Parse(string)` and `Parse(string, IFormatProvider)`, as `System.Numerics.BigInteger` does, the `IFormatProvider` overload is used. A value it can't read, such as one saved in the current culture by an earlier version, is read with `Parse(string)` instead.
 
 #### Invalid Method Signatures
 
@@ -296,7 +301,7 @@ public static MyType Convert(string value) { ... }
 public MyType FromString(string value) { ... }        // Not static
 public static MyType FromString(int value) { ... }    // Wrong parameter type
 public static string FromString(string value) { ... } // Wrong return type
-public static MyType FromString(string value, IFormatProvider provider) { ... } // Too many parameters
+public static MyType FromString(string value, int weight) { ... } // Extra parameter that can't be supplied
 ```
 
 ## Performance Considerations
