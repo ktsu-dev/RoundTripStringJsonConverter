@@ -1,6 +1,6 @@
-## v1.0.78 (patch)
+## v1.0.79-pre.1 (prerelease)
 
-Changes since v1.0.77:
+Changes since v1.0.78:
 
-- Leave records whose only ToString is compiler-generated to System.Text.Json [patch] (#136) (matt-edmondson)
+- Bump the ktsu group with 10 updates (dependabot[bot])
 
