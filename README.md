@@ -277,7 +277,7 @@ For a type to work with RoundTripStringJsonConverter, it must meet these require
 
 A type that names its own converter with a type-level `[JsonConverter(typeof(...))]` attribute is left to that converter, even when the factory is registered in `JsonSerializerOptions.Converters` and the type has a supported conversion method. Registering the factory never changes the wire format of such a type.
 
-A type that has a conversion method but doesn't override `ToString()`, itself or through a base class, is left to System.Text.Json's default object serialization. Writing it through `ToString()` would only record its type name.
+A type that has a conversion method but doesn't override `ToString()`, itself or through a base class, is left to System.Text.Json's default object serialization. Writing it through `ToString()` would only record its type name. An abstract base class or an interface with a conversion method is still converted, because the value written is always a derived or implementing type whose own `ToString()` override supplies the string.
 
 #### Valid Method Signatures
 

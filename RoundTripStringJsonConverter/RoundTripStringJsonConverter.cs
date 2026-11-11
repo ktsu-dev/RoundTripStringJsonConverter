@@ -267,12 +267,20 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// <summary>
 	/// Determines whether a type overrides <see cref="object.ToString"/>, itself or through a base class
 	/// below <see cref="object"/> and <see cref="ValueType"/>. Without an override, <c>ToString()</c>
-	/// returns the type's name and the value's data would be lost on write.
+	/// returns the type's name and the value's data would be lost on write. An abstract class or an
+	/// interface passes: no instance of it exists, so the value written is always a derived or implementing
+	/// type, which supplies <c>ToString()</c> itself.
 	/// </summary>
 	/// <param name="type">The type to check.</param>
-	/// <returns>True if <c>ToString()</c> is overridden; otherwise, false.</returns>
+	/// <returns>True if <c>ToString()</c> is overridden, or the type is abstract or an interface; otherwise, false.</returns>
 	private static bool OverridesToString(Type type)
 	{
+		// Interfaces are abstract too, and expose no object members to look up
+		if (type.IsAbstract)
+		{
+			return true;
+		}
+
 		MethodInfo? toString = type.GetMethod(nameof(ToString), BindingFlags.Public | BindingFlags.Instance, binder: null, Type.EmptyTypes, modifiers: null);
 		return toString is not null
 			&& toString.DeclaringType != typeof(object)
