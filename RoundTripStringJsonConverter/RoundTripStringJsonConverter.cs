@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 /// <summary>
 /// A factory for creating JSON converters that use a type's ToString and string conversion methods for serialization.
@@ -114,16 +115,17 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		MethodInfo[] publicStaticMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 		foreach (string methodName in SupportedMethodNames)
 		{
-			// Close any generic candidates over the type, dropping those that can't be closed or can't be called
-			MethodInfo[] methods = [.. publicStaticMethods
-				.Where(m => m.Name == methodName && !IsDeclaredOnRuntimeBase(m))
-				.Select(m => CloseOverType(m, type))
-				.OfType<MethodInfo>()
-				.Where(m => IsUsableConversionMethod(m, type))];
+			MethodInfo[] methods = GetUsableConversionMethods(publicStaticMethods, methodName, type);
 
-			// Prefer an exact single-string overload. Otherwise take the first overload whose extra
-			// parameters can all be supplied, so GetMethods() ordering can't pick one we can't call.
-			MethodInfo? match = methods.FirstOrDefault(m => m.GetParameters().Length == 1) ?? methods.FirstOrDefault();
+			// An IFormattable type can be written with the invariant culture, so prefer an overload that
+			// reads it back with the invariant culture: otherwise a value written under one culture
+			// (BigInteger's "−5" under sv-SE) can't be read under another. Failing that, prefer an exact
+			// single-string overload. Otherwise take the first overload whose extra parameters can all be
+			// supplied, so GetMethods() ordering can't pick one we can't call.
+			MethodInfo? match =
+				(typeof(IFormattable).IsAssignableFrom(type) ? methods.FirstOrDefault(TakesFormatProvider) : null)
+				?? methods.FirstOrDefault(m => m.GetParameters().Length == 1)
+				?? methods.FirstOrDefault();
 			if (match is not null)
 			{
 				return match;
@@ -131,6 +133,51 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		}
 		return null;
 	}
+
+	/// <summary>
+	/// Finds the single-string overload a value may have been written for before an invariant-culture
+	/// overload was preferred over it by <see cref="FindStringConversionMethod"/>. Such a value was
+	/// written in whatever culture the writing process had, so it is read with this overload, in the
+	/// current culture, when the invariant overload can't read it.
+	/// </summary>
+	/// <param name="type">The type to convert to.</param>
+	/// <param name="conversionMethod">The method chosen by <see cref="FindStringConversionMethod"/>.</param>
+	/// <returns>The single-string overload, or null if there is nothing to fall back to.</returns>
+	private static MethodInfo? FindCurrentCultureFallbackMethod(Type type, MethodInfo? conversionMethod)
+	{
+		if (conversionMethod is null || !TakesFormatProvider(conversionMethod) || !typeof(IFormattable).IsAssignableFrom(type))
+		{
+			return null;
+		}
+
+		MethodInfo[] publicStaticMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+		return GetUsableConversionMethods(publicStaticMethods, conversionMethod.Name, type)
+			.FirstOrDefault(m => m.GetParameters().Length == 1);
+	}
+
+	/// <summary>
+	/// Gets the overloads of a conversion method that can convert a string to the specified type, with
+	/// generic candidates closed over the type and those that can't be closed or can't be called dropped.
+	/// </summary>
+	/// <param name="publicStaticMethods">The type's public static methods.</param>
+	/// <param name="methodName">The conversion method name.</param>
+	/// <param name="type">The type to convert to.</param>
+	/// <returns>The usable overloads.</returns>
+	private static MethodInfo[] GetUsableConversionMethods(MethodInfo[] publicStaticMethods, string methodName, Type type) =>
+		[.. publicStaticMethods
+			.Where(m => m.Name == methodName && !IsDeclaredOnRuntimeBase(m))
+			.Select(m => CloseOverType(m, type))
+			.OfType<MethodInfo>()
+			.Where(m => IsUsableConversionMethod(m, type))];
+
+	/// <summary>
+	/// Determines whether a conversion method takes an <see cref="IFormatProvider"/>, which
+	/// <see cref="BuildArguments"/> supplies as the invariant culture.
+	/// </summary>
+	/// <param name="method">The conversion method.</param>
+	/// <returns>True if the method takes an <see cref="IFormatProvider"/>; otherwise, false.</returns>
+	private static bool TakesFormatProvider(MethodInfo method) =>
+		method.GetParameters().Any(p => p.ParameterType == typeof(IFormatProvider));
 
 	/// <summary>
 	/// Determines whether a method is inherited from <see cref="Enum"/>, <see cref="ValueType"/> or <see cref="object"/>
@@ -198,12 +245,35 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		arguments[0] = value;
 		for (int i = 1; i < parameters.Length; i++)
 		{
-			arguments[i] = parameters[i].ParameterType == typeof(IFormatProvider)
+			ParameterInfo parameter = parameters[i];
+			arguments[i] = parameter.ParameterType == typeof(IFormatProvider)
 				? CultureInfo.InvariantCulture
-				: Type.Missing;
+				: GetOptionalArgument(parameter);
 		}
 
 		return arguments;
+	}
+
+	/// <summary>
+	/// Gets the argument for an optional parameter, as the C# compiler would pass it when the caller omits it.
+	/// </summary>
+	/// <param name="parameter">The optional parameter.</param>
+	/// <returns>
+	/// <see cref="Type.Missing"/> when the parameter declares a default, so reflection substitutes that default;
+	/// otherwise the default of the parameter's type. Reflection only substitutes a declared default, so passing
+	/// <see cref="Type.Missing"/> for an <c>[Optional]</c> parameter with none fails the call.
+	/// </returns>
+	private static object? GetOptionalArgument(ParameterInfo parameter)
+	{
+		if (parameter.HasDefaultValue)
+		{
+			return Type.Missing;
+		}
+
+		Type type = parameter.ParameterType;
+		return type.IsValueType && Nullable.GetUnderlyingType(type) is null
+			? Activator.CreateInstance(type)
+			: null;
 	}
 
 	/// <summary>
@@ -221,12 +291,17 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			return false;
 		}
 
-		// Leave a type that names its own converter with [JsonConverter] to that converter. Converters in
+		// Leave a type that names another converter with [JsonConverter] to that converter. Converters in
 		// JsonSerializerOptions.Converters outrank a type-level attribute, so without this check registering
-		// the factory would silently change the wire format of such a type. System.Text.Json reads the
-		// attribute with inherit: false, and so do we.
+		// the factory would silently change the wire format of such a type. An attribute that names this
+		// factory is the type opting in, so keep converting it: System.Text.Json instantiates the factory
+		// from the attribute and throws if CanConvert then declines. System.Text.Json reads the attribute
+		// with inherit: false, and so do we.
 		Type declaredType = Nullable.GetUnderlyingType(typeToConvert) ?? typeToConvert;
-		if (declaredType.IsDefined(typeof(JsonConverterAttribute), inherit: false))
+		JsonConverterAttribute? converterAttribute = declaredType.GetCustomAttribute<JsonConverterAttribute>(inherit: false);
+		if (converterAttribute is not null
+			&& (converterAttribute.ConverterType is null
+				|| !typeof(RoundTripStringJsonConverterFactory).IsAssignableFrom(converterAttribute.ConverterType)))
 		{
 			return false;
 		}
@@ -244,7 +319,9 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// <summary>
 	/// Determines whether a type overrides <see cref="object.ToString"/>, itself or through a base class
 	/// below <see cref="object"/> and <see cref="ValueType"/>. Without an override, <c>ToString()</c>
-	/// returns the type's name and the value's data would be lost on write.
+	/// returns the type's name and the value's data would be lost on write. An abstract class or an
+	/// interface passes: no instance of it exists, so the value written is always a derived or implementing
+	/// type, which supplies <c>ToString()</c> itself.
 	/// </summary>
 	/// <remarks>
 	/// The <c>ToString()</c> the compiler synthesizes for a <c>record</c> or <c>record struct</c> does not
@@ -253,9 +330,15 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 	/// because the compiler then synthesizes nothing.
 	/// </remarks>
 	/// <param name="type">The type to check.</param>
-	/// <returns>True if <c>ToString()</c> is overridden; otherwise, false.</returns>
+	/// <returns>True if <c>ToString()</c> is overridden, or the type is abstract or an interface; otherwise, false.</returns>
 	private static bool OverridesToString(Type type)
 	{
+		// Interfaces are abstract too, and expose no object members to look up
+		if (type.IsAbstract)
+		{
+			return true;
+		}
+
 		MethodInfo? toString = type.GetMethod(nameof(ToString), BindingFlags.Public | BindingFlags.Instance, binder: null, Type.EmptyTypes, modifiers: null);
 		return toString is not null
 			&& toString.DeclaringType != typeof(object)
@@ -292,7 +375,13 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 		/// in which case values must be written with the invariant culture too.
 		/// </summary>
 		private static readonly bool ReadsWithInvariantCulture =
-			StringConversionMethod?.GetParameters().Any(p => p.ParameterType == typeof(IFormatProvider)) ?? false;
+			StringConversionMethod is not null && TakesFormatProvider(StringConversionMethod);
+
+		/// <summary>
+		/// The single-string overload that reads values written in the current culture, before
+		/// <see cref="StringConversionMethod"/> was preferred over it, or null if there is none.
+		/// </summary>
+		private static readonly MethodInfo? CurrentCultureFallbackMethod = FindCurrentCultureFallbackMethod(typeof(T), StringConversionMethod);
 
 		/// <summary>
 		/// Formats a value in the culture its conversion method reads it back with: the invariant culture
@@ -314,17 +403,57 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 				return formattable.ToString(null, CultureInfo.InvariantCulture);
 			}
 
+			// Assigning the original culture back would pin it: a thread that never set a culture reads
+			// DefaultThreadCurrentCulture live, and an explicit assignment stays in the caller's execution
+			// context, so later default changes would stop reaching it and everything it starts. Running in
+			// a copy of the context discards the switch instead. The restore still runs for .NET Framework,
+			// where the culture is thread-static rather than part of the context, and when flow is suppressed.
+			ExecutionContext? context = ExecutionContext.Capture();
+			if (context is null)
+			{
+				return ToStringInInvariantCulture(value);
+			}
+
+			using (context)
+			{
+				string? result = null;
+				ExecutionContext.Run(context, _ => result = ToStringInInvariantCulture(value), null);
+				return result;
+			}
+		}
+
+		/// <summary>
+		/// Runs a value's <c>ToString()</c> with the current culture set to the invariant culture.
+		/// </summary>
+		/// <param name="value">The value to format.</param>
+		/// <returns>The value's string representation.</returns>
+		private static string? ToStringInInvariantCulture(T value)
+		{
 			CultureInfo originalCulture = CultureInfo.CurrentCulture;
 			try
 			{
 				CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-				return value.ToString();
+				return value?.ToString();
 			}
 			finally
 			{
 				CultureInfo.CurrentCulture = originalCulture;
 			}
 		}
+
+		/// <summary>
+		/// Formats a non-null value for writing, refusing a <c>ToString()</c> that returns null.
+		/// Written as a JSON <c>null</c>, such a value can't be read back: a value type rejects the token and a
+		/// reference type reads it as a null reference. Written as a property name, it would become <c>""</c>,
+		/// which reads back through the conversion method as a different value. Failing here surfaces the
+		/// problem when the document is saved rather than when it is next loaded.
+		/// </summary>
+		/// <param name="value">The value to format.</param>
+		/// <returns>The string representation of the value.</returns>
+		/// <exception cref="JsonException">Thrown when the value's <c>ToString()</c> returns null.</exception>
+		private static string FormatNonNullValue(T value) =>
+			FormatValue(value)
+			?? throw new JsonException($"Cannot write a {typeof(T)} because its ToString() returned null, which {nameof(RoundTripStringJsonConverterFactory)} can't read back.");
 
 		/// <summary>
 		/// Gets a value indicating whether null values should be handled by this converter.
@@ -380,20 +509,61 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 #endif
 
 		/// <summary>
-		/// Invokes the type's string conversion method on the specified value.
+		/// Invokes the type's string conversion method on the specified value. If that reads with the
+		/// invariant culture and rejects the value, the value may have been written in the current culture
+		/// before the invariant overload was preferred, so it is read with the single-string overload instead.
 		/// </summary>
+		/// <param name="stringValue">The string to convert.</param>
+		/// <returns>The converted value.</returns>
+		private static T InvokeStringConversionMethod(string stringValue)
+		{
+			if (CurrentCultureFallbackMethod is null)
+			{
+				return Invoke(StringConversionMethod!, stringValue);
+			}
+
+			try
+			{
+				return Invoke(StringConversionMethod!, stringValue);
+			}
+			catch (Exception ex) when (IsParseFailure(ex))
+			{
+				try
+				{
+					return Invoke(CurrentCultureFallbackMethod, stringValue);
+				}
+				catch (Exception fallbackEx) when (IsParseFailure(fallbackEx))
+				{
+					// Report the invariant overload's failure, since that is the format values are written in
+					System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+					throw;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Determines whether an exception from a conversion method means it could not read the string.
+		/// </summary>
+		/// <param name="ex">The exception thrown by the conversion method.</param>
+		/// <returns>True if the string was rejected; otherwise, false.</returns>
+		private static bool IsParseFailure(Exception ex) => ex is FormatException or OverflowException or ArgumentException;
+
+		/// <summary>
+		/// Invokes a conversion method on the specified value.
+		/// </summary>
+		/// <param name="method">The conversion method.</param>
 		/// <param name="stringValue">The string to convert.</param>
 		/// <returns>The converted value.</returns>
 #if NET
 		// Let the conversion method's exception propagate as it was thrown, keeping its type and stack trace
-		private static T InvokeStringConversionMethod(string stringValue) =>
-			(T)StringConversionMethod!.Invoke(null, BindingFlags.DoNotWrapExceptions, binder: null, BuildArguments(StringConversionMethod, stringValue), culture: null)!;
+		private static T Invoke(MethodInfo method, string stringValue) =>
+			(T)method.Invoke(null, BindingFlags.DoNotWrapExceptions, binder: null, BuildArguments(method, stringValue), culture: null)!;
 #else
-		private static T InvokeStringConversionMethod(string stringValue)
+		private static T Invoke(MethodInfo method, string stringValue)
 		{
 			try
 			{
-				return (T)StringConversionMethod!.Invoke(null, BuildArguments(StringConversionMethod, stringValue))!;
+				return (T)method.Invoke(null, BuildArguments(method, stringValue))!;
 			}
 			catch (TargetInvocationException ex) when (ex.InnerException is not null)
 			{
@@ -419,8 +589,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 				return;
 			}
 
-			string? stringValue = FormatValue(value);
-			writer.WriteStringValue(stringValue);
+			writer.WriteStringValue(FormatNonNullValue(value));
 		}
 
 #if NET6_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
@@ -441,8 +610,7 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			}
 #pragma warning restore KTSU0004 // Use Ensure.NotNull instead of manual null check
 
-			string? stringValue = FormatValue(value);
-			writer.WritePropertyName(stringValue ?? string.Empty);
+			writer.WritePropertyName(FormatNonNullValue(value));
 		}
 #endif
 	}

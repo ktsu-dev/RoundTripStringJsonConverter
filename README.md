@@ -275,9 +275,9 @@ For a type to work with RoundTripStringJsonConverter, it must meet these require
 3. The method must return an instance of the declaring type
 4. Override `ToString()` to provide a string representation that can be reversed by the conversion method
 
-A type that names its own converter with a type-level `[JsonConverter(typeof(...))]` attribute is left to that converter, even when the factory is registered in `JsonSerializerOptions.Converters` and the type has a supported conversion method. Registering the factory never changes the wire format of such a type.
+A type that names its own converter with a type-level `[JsonConverter(typeof(...))]` attribute is left to that converter, even when the factory is registered in `JsonSerializerOptions.Converters` and the type has a supported conversion method. Registering the factory never changes the wire format of such a type. The exception is an attribute that names the factory itself, `[JsonConverter(typeof(RoundTripStringJsonConverterFactory))]`, which opts that one type in without registering the factory globally; such a type is converted with or without the factory in `JsonSerializerOptions.Converters`, including as a dictionary key.
 
-A type that has a conversion method but doesn't override `ToString()`, itself or through a base class, is left to System.Text.Json's default object serialization. Writing it through `ToString()` would only record its type name. The same goes for a `record` or `record struct` whose only `ToString()` is the one the compiler generates, which writes the debug form `Email { Value = a@b.c }`. Declare `ToString()` on the record to have it written as a string.
+A type that has a conversion method but doesn't override `ToString()`, itself or through a base class, is left to System.Text.Json's default object serialization. Writing it through `ToString()` would only record its type name. The same goes for a `record` or `record struct` whose only `ToString()` is the one the compiler generates, which writes the debug form `Email { Value = a@b.c }`. Declare `ToString()` on the record to have it written as a string. An abstract base class or an interface with a conversion method is still converted, because the value written is always a derived or implementing type whose own `ToString()` override supplies the string.
 
 #### Valid Method Signatures
 
@@ -287,7 +287,12 @@ public static MyType FromString(string value) { ... }
 public static MyType Parse(string value) { ... }
 public static MyType Create(string value) { ... }
 public static MyType Convert(string value) { ... }
+
+// So are overloads whose extra parameters are an IFormatProvider or optional:
+public static MyType Parse(string value, IFormatProvider? provider) { ... } // Given CultureInfo.InvariantCulture
 ```
+
+A method that takes an `IFormatProvider` is given `CultureInfo.InvariantCulture`, and an `IFormattable` value is then written with the invariant culture too, so JSON saved under one culture can be read under another. When an `IFormattable` type has both `Parse(string)` and `Parse(string, IFormatProvider)`, as `System.Numerics.BigInteger` does, the `IFormatProvider` overload is used. A value it can't read, such as one saved in the current culture by an earlier version, is read with `Parse(string)` instead.
 
 #### Invalid Method Signatures
 
@@ -296,7 +301,7 @@ public static MyType Convert(string value) { ... }
 public MyType FromString(string value) { ... }        // Not static
 public static MyType FromString(int value) { ... }    // Wrong parameter type
 public static string FromString(string value) { ... } // Wrong return type
-public static MyType FromString(string value, IFormatProvider provider) { ... } // Too many parameters
+public static MyType FromString(string value, int weight) { ... } // Extra parameter that can't be supplied
 ```
 
 ## Performance Considerations
@@ -312,6 +317,7 @@ The converter provides comprehensive error handling:
 
 - **Invalid JSON Types**: Throws `JsonException` for non-string JSON tokens
 - **Conversion Failures**: Propagates exceptions from conversion methods
+- **Null `ToString()`**: Throws `JsonException` when writing a non-null value whose `ToString()` returns null, such as a default struct wrapping an unset string. A JSON `null` or an empty property name would not read back as the same value, so the write fails instead of the next read
 - **Missing Methods**: Types without valid conversion methods are ignored
 - **Null Arguments**: Proper `ArgumentNullException` handling
 
