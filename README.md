@@ -312,6 +312,7 @@ The converter provides comprehensive error handling:
 
 - **Invalid JSON Types**: Throws `JsonException` for non-string JSON tokens
 - **Conversion Failures**: Propagates exceptions from conversion methods
+- **Null `ToString()`**: Throws `JsonException` when writing a non-null value whose `ToString()` returns null, such as a default struct wrapping an unset string. A JSON `null` or an empty property name would not read back as the same value, so the write fails instead of the next read
 - **Missing Methods**: Types without valid conversion methods are ignored
 - **Null Arguments**: Proper `ArgumentNullException` handling
 
