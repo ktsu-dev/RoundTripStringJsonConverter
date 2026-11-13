@@ -1,3 +1,9 @@
+## v1.0.79 (patch)
+
+Changes since v1.0.78:
+
+- Leave types with [JsonPolymorphic] or [JsonDerivedType] to System.Text.Json [patch] (#152) (matt-edmondson)
+
 ## v1.0.79-pre.2 (prerelease)
 
 Changes since v1.0.79-pre.1:

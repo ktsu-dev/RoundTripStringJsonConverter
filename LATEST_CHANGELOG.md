@@ -1,6 +1,6 @@
-## v1.0.79-pre.2 (prerelease)
+## v1.0.79 (patch)
 
-Changes since v1.0.79-pre.1:
+Changes since v1.0.78:
 
-- Bump MSTest.Sdk from 4.5.2 to 4.5.3 (dependabot[bot])
+- Leave types with [JsonPolymorphic] or [JsonDerivedType] to System.Text.Json [patch] (#152) (matt-edmondson)
 
