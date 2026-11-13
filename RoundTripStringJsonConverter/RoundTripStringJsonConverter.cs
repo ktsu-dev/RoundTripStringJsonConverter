@@ -306,6 +306,17 @@ public class RoundTripStringJsonConverterFactory : JsonConverterFactory
 			return false;
 		}
 
+		// Leave a type with System.Text.Json polymorphism configured through [JsonPolymorphic] or
+		// [JsonDerivedType] to System.Text.Json. Its polymorphic resolver throws NotSupportedException on
+		// every read and write of the declared type once a custom converter claims it. System.Text.Json reads
+		// these attributes with inherit: false, and so do we. Polymorphism configured only through a contract
+		// resolver (JsonTypeInfo.PolymorphismOptions) can't be seen from here.
+		if (declaredType.IsDefined(typeof(JsonPolymorphicAttribute), inherit: false)
+			|| declaredType.IsDefined(typeof(JsonDerivedTypeAttribute), inherit: false))
+		{
+			return false;
+		}
+
 		// Writing uses ToString, so a type that never overrides it would be written as its type name
 		if (!OverridesToString(typeToConvert))
 		{

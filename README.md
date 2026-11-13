@@ -279,6 +279,8 @@ A type that names its own converter with a type-level `[JsonConverter(typeof(...
 
 A type that has a conversion method but doesn't override `ToString()`, itself or through a base class, is left to System.Text.Json's default object serialization. Writing it through `ToString()` would only record its type name. The same goes for a `record` or `record struct` whose only `ToString()` is the one the compiler generates, which writes the debug form `Email { Value = a@b.c }`. Declare `ToString()` on the record to have it written as a string. An abstract base class or an interface with a conversion method is still converted, because the value written is always a derived or implementing type whose own `ToString()` override supplies the string.
 
+A type with System.Text.Json polymorphism configured through `[JsonPolymorphic]` or `[JsonDerivedType]` on the type itself is left to System.Text.Json, so it keeps its type discriminator and its derived types' properties. A converter that claimed such a type would make System.Text.Json throw `NotSupportedException` on every read and write of it. Polymorphism configured only through a contract resolver (`JsonTypeInfo.PolymorphismOptions`) can't be seen by the factory.
+
 #### Valid Method Signatures
 
 ```csharp
